@@ -69,7 +69,8 @@ public class QJPageReloadView extends LinearLayout {
         initChildView();
     }
 
-    /*实例子view*/
+    /*
+    * 实例子view*/
     private void initChildView() {
         headerView = (TextView) getChildAt(0);
         listView = (ListView) getChildAt(1);
@@ -102,8 +103,7 @@ public class QJPageReloadView extends LinearLayout {
         boolean intercept = false;
         boolean listViewScrolling = false;
 
-        /*
-        * 滑动事件判定*/
+        //滑动事件判定
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 curX = preX = ev.getX();
@@ -111,35 +111,38 @@ public class QJPageReloadView extends LinearLayout {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                listViewScrolling = true;
                 curX = ev.getX();
                 curY = ev.getY();
 
-                if (curY - preY > MIN_DELTA_Y)
+                if (curY - preY > MIN_DELTA_Y) {
+                    listViewScrolling = true;
                     moveDown = true;
-                else if (preY - curY > MIN_DELTA_Y)
+                } else if (preY - curY > MIN_DELTA_Y) {
+                    listViewScrolling = true;
                     moveUp = true;
+                }
 
                 break;
         }
-        Log.e(TAG, "======== onInterceptTouchEvent ==========\n下滑手势：" + moveDown + "        上滑手势：" + moveUp);
+//        Log.e(TAG, "======== onInterceptTouchEvent ==========\n下滑手势：" + moveDown + "        上滑手势：" + moveUp);
 
 
-        if (lisViewArriveTop() && moveDown){
+        if (lisViewArriveTop() && moveDown) {
             curAction = QJViewAction.ACTION_REFRESH;
             intercept = true;
         }
-        else if (listViewArriveBottom() && moveUp){
+        else if (listViewArriveBottom() && moveUp) {
             curAction = QJViewAction.ACTION_LOAD_MORE;
             intercept = true;
-        }else {
-            curAction=QJViewAction.ACTION_UNDEFINED;
+        }
+        else {
+            curAction = QJViewAction.ACTION_UNDEFINED;
             if (listViewScrolling)
                 resetHeaderAndFooterView();
         }
 
 
-        Log.e(TAG, "======== onInterceptTouchEvent ==========\n拦截：" + intercept);
+//        Log.e(TAG, "======== onInterceptTouchEvent ==========\n拦截：" + intercept);
         // 重置上滑和下拉标记
         resetActionTag();
         // 改变pre的 X，Y 坐标
@@ -182,10 +185,10 @@ public class QJPageReloadView extends LinearLayout {
                 break;
         }
 
-        if (curAction==QJViewAction.ACTION_REFRESH) {
+        if (curAction == QJViewAction.ACTION_REFRESH) {
             initRefreshView();
             handled = true;
-        } else if (curAction==QJViewAction.ACTION_LOAD_MORE) {
+        } else if (curAction == QJViewAction.ACTION_LOAD_MORE) {
             initLoadMoreView();
             handled = true;
         }
@@ -238,6 +241,6 @@ public class QJPageReloadView extends LinearLayout {
     private static class QJViewAction {
         public static int ACTION_UNDEFINED = 0;
         public static int ACTION_REFRESH = 1;
-        public static int ACTION_LOAD_MORE= 2;
+        public static int ACTION_LOAD_MORE = 2;
     }
 }
