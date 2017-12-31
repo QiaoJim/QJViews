@@ -2,6 +2,7 @@
 <com.qiaojim.qjviews.QJPageReloadView.QJPageReloadView android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:id="@+id/qj_page_reload_view"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView
@@ -9,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:gravity="center"
+        android:visibility="gone"
         android:background="@color/white"/>
 
     <ListView
@@ -24,6 +26,7 @@
         android:id="@+id/footer_view"
         android:background="@color/white"
         android:gravity="center"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="45dp" />
 

@@ -6,13 +6,10 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Author: QiaoJim
@@ -30,6 +27,7 @@ public class QJPageReloadView extends LinearLayout {
 
     private TextView headerView;
     private ListView listView;
+    private BaseAdapter adapter;
     private TextView footerView;
 
     //touch 事件的坐标
@@ -42,6 +40,9 @@ public class QJPageReloadView extends LinearLayout {
     private boolean moveDown = false;
     private boolean moveUp = false;
     private int curAction = QJViewAction.ACTION_UNDEFINED;
+
+    //回调接口
+    private QJPageReloadViewListener qjPageReloadViewListener;
 
     public QJPageReloadView(Context context) {
         super(context);
@@ -62,7 +63,6 @@ public class QJPageReloadView extends LinearLayout {
         this.context = context;
     }
 
-
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
@@ -75,18 +75,6 @@ public class QJPageReloadView extends LinearLayout {
         headerView = (TextView) getChildAt(0);
         listView = (ListView) getChildAt(1);
         footerView = (TextView) getChildAt(2);
-
-        headerView.setText("header");
-        footerView.setText("footer");
-
-        List<String> dataList = new ArrayList<>();
-        for (int i = 0; i < 50; i++) {
-            dataList.add("" + i);
-        }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context,
-                android.R.layout.simple_expandable_list_item_1,
-                dataList);
-        listView.setAdapter(adapter);
     }
 
     @Override
@@ -126,23 +114,23 @@ public class QJPageReloadView extends LinearLayout {
         }
 //        Log.e(TAG, "======== onInterceptTouchEvent ==========\n下滑手势：" + moveDown + "        上滑手势：" + moveUp);
 
-
         if (lisViewArriveTop() && moveDown) {
             curAction = QJViewAction.ACTION_REFRESH;
             intercept = true;
-        }
-        else if (listViewArriveBottom() && moveUp) {
+        } else if (listViewArriveBottom() && moveUp) {
             curAction = QJViewAction.ACTION_LOAD_MORE;
             intercept = true;
-        }
-        else {
+        } else {
             curAction = QJViewAction.ACTION_UNDEFINED;
             if (listViewScrolling)
                 resetHeaderAndFooterView();
         }
 
 
-//        Log.e(TAG, "======== onInterceptTouchEvent ==========\n拦截：" + intercept);
+//        if (intercept) {
+//            Log.e(TAG, "======== onInterceptTouchEvent ==========\n拦截：" + intercept);
+//        }
+
         // 重置上滑和下拉标记
         resetActionTag();
         // 改变pre的 X，Y 坐标
@@ -152,8 +140,8 @@ public class QJPageReloadView extends LinearLayout {
     }
 
     private void resetHeaderAndFooterView() {
-        headerView.setText("header");
-        footerView.setText("footer");
+        headerView.setVisibility(GONE);
+        footerView.setVisibility(GONE);
     }
 
     private void resetPreCoordinate() {
@@ -174,23 +162,29 @@ public class QJPageReloadView extends LinearLayout {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-
+//                Log.e(TAG, "action down");
                 break;
+
             case MotionEvent.ACTION_MOVE:
-
+//                Log.e(TAG, "action move");
                 break;
+
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
+//                Log.e(TAG, "action up/cancel");
 
+                if (curAction == QJViewAction.ACTION_REFRESH) {
+                    if (qjPageReloadViewListener != null)
+                        qjPageReloadViewListener.onRefresh();
+                    initRefreshView();
+                    handled = true;
+                } else if (curAction == QJViewAction.ACTION_LOAD_MORE) {
+                    if (qjPageReloadViewListener != null)
+                        qjPageReloadViewListener.onLoadMore();
+                    initLoadMoreView();
+                    handled = true;
+                }
                 break;
-        }
-
-        if (curAction == QJViewAction.ACTION_REFRESH) {
-            initRefreshView();
-            handled = true;
-        } else if (curAction == QJViewAction.ACTION_LOAD_MORE) {
-            initLoadMoreView();
-            handled = true;
         }
 
         return handled;
@@ -199,12 +193,14 @@ public class QJPageReloadView extends LinearLayout {
     /*
     * 显示下拉刷新view*/
     private void initRefreshView() {
+        headerView.setVisibility(VISIBLE);
         headerView.setText("下拉刷新");
     }
 
     /*
     * 显示加载更多view*/
     private void initLoadMoreView() {
+        footerView.setVisibility(VISIBLE);
         footerView.setText("加载更多");
     }
 
@@ -219,13 +215,15 @@ public class QJPageReloadView extends LinearLayout {
             }
         }
 
-//        Log.e(TAG, "======== lisViewArriveTop ==========\n到达顶部：" + atTop);
+//        if (atTop) {
+//            Log.e(TAG, "======== lisViewArriveTop ==========\n到达顶部：" + atTop);
+//        }
         return atTop;
     }
 
     /*
     * 列表是否到达底部*/
-    private boolean listViewArriveBottom() {
+    public boolean listViewArriveBottom() {
         boolean atBottom = false;
         if (listView != null) {
             View lastVisibleItemView = listView.getChildAt(listView.getChildCount() - 1);
@@ -234,13 +232,56 @@ public class QJPageReloadView extends LinearLayout {
             }
         }
 
-//        Log.e(TAG, "======== lisViewArriveTop ==========\n到达底部：" + atBottom);
+//        if (atBottom) {
+            Log.e(TAG, "======== lisViewArriveBottom ==========\n到达底部：" + atBottom);
+//        }
         return atBottom;
     }
 
+    /*
+    * 动作常量*/
     private static class QJViewAction {
         public static int ACTION_UNDEFINED = 0;
         public static int ACTION_REFRESH = 1;
         public static int ACTION_LOAD_MORE = 2;
+    }
+
+    /*
+    * 回调接口定义*/
+    public interface QJPageReloadViewListener {
+        /*
+        * 下拉刷新回调*/
+        void onRefresh();
+
+        /*
+        * 加载更多回调*/
+        void onLoadMore();
+
+    }
+
+    /**
+     * 设置回调接口
+     *
+     * @param listener
+     */
+    public void setQJPageReloadViewListener(QJPageReloadViewListener listener) {
+        this.qjPageReloadViewListener = listener;
+    }
+
+    /**
+     * 设置listview的适配器
+     *
+     * @param adapter
+     */
+    public void setAdapter(BaseAdapter adapter) {
+        this.adapter = adapter;
+        listView.setAdapter(adapter);
+    }
+
+    /**
+     * 刷新listview的数据
+     */
+    public void update() {
+        adapter.notifyDataSetChanged();
     }
 }
