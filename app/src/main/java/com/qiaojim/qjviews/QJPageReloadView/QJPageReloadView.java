@@ -162,16 +162,13 @@ public class QJPageReloadView extends LinearLayout {
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-//                Log.e(TAG, "action down");
                 break;
 
             case MotionEvent.ACTION_MOVE:
-//                Log.e(TAG, "action move");
                 break;
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-//                Log.e(TAG, "action up/cancel");
 
                 if (curAction == QJViewAction.ACTION_REFRESH) {
                     if (qjPageReloadViewListener != null)
@@ -206,7 +203,7 @@ public class QJPageReloadView extends LinearLayout {
 
     /*
     * 列表是否到达顶部*/
-    public boolean lisViewArriveTop() {
+    private boolean lisViewArriveTop() {
         boolean atTop = false;
         if (listView != null) {
             atTop = !(listView.getChildCount() > 0 &&
@@ -220,7 +217,7 @@ public class QJPageReloadView extends LinearLayout {
 
     /*
     * 列表是否到达底部*/
-    public boolean listViewArriveBottom() {
+    private boolean listViewArriveBottom() {
         boolean atBottom = false;
         if (listView != null) {
             int lastChildBottom = listView.getChildAt(listView.getChildCount() - 1).getBottom();

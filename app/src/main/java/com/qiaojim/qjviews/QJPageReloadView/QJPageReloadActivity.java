@@ -38,7 +38,6 @@ public class QJPageReloadActivity extends AppCompatActivity {
                     dataList.addFirst("" + i);
                 }
                 qjPageReloadView.update();
-                qjPageReloadView.lisViewArriveTop();
             }
 
             @Override
