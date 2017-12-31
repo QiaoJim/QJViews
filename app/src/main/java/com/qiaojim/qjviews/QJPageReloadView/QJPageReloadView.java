@@ -206,18 +206,15 @@ public class QJPageReloadView extends LinearLayout {
 
     /*
     * 列表是否到达顶部*/
-    private boolean lisViewArriveTop() {
+    public boolean lisViewArriveTop() {
         boolean atTop = false;
         if (listView != null) {
-            View firstVisibleItemView = listView.getChildAt(0);
-            if (firstVisibleItemView != null && firstVisibleItemView.getTop() == 0) {
-                atTop = true;
-            }
+            atTop = !(listView.getChildCount() > 0 &&
+                    (listView.getFirstVisiblePosition() > 0
+                    || listView.getChildAt(0).getTop() < listView.getPaddingTop()));
         }
 
-//        if (atTop) {
-//            Log.e(TAG, "======== lisViewArriveTop ==========\n到达顶部：" + atTop);
-//        }
+        Log.e(TAG, "======== lisViewArriveTop ==========\n到达顶部：" + atTop+ "     Item数量：" + listView.getAdapter().getCount());
         return atTop;
     }
 
@@ -226,15 +223,12 @@ public class QJPageReloadView extends LinearLayout {
     public boolean listViewArriveBottom() {
         boolean atBottom = false;
         if (listView != null) {
-            View lastVisibleItemView = listView.getChildAt(listView.getChildCount() - 1);
-            if (lastVisibleItemView != null && lastVisibleItemView.getBottom() == listView.getHeight()) {
-                atBottom = true;
-            }
+            int lastChildBottom = listView.getChildAt(listView.getChildCount() - 1).getBottom();
+            atBottom = listView.getLastVisiblePosition() == listView.getAdapter().getCount() - 1
+                    && lastChildBottom >= listView.getMeasuredHeight();
         }
 
-//        if (atBottom) {
-            Log.e(TAG, "======== lisViewArriveBottom ==========\n到达底部：" + atBottom);
-//        }
+        Log.e(TAG, "======== lisViewArriveBottom ==========\n到达底部：" + atBottom + "     Item数量：" + listView.getAdapter().getCount());
         return atBottom;
     }
 

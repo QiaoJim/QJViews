@@ -13,7 +13,7 @@ import java.util.List;
 
 public class QJPageReloadActivity extends AppCompatActivity {
 
-    private final String TAG="QJPageReloadActivity";
+    private final String TAG = "QJPageReloadActivity";
 
     private QJPageReloadView qjPageReloadView;
     private QJPageReloadView.QJPageReloadViewListener listener;
@@ -38,6 +38,7 @@ public class QJPageReloadActivity extends AppCompatActivity {
                     dataList.addFirst("" + i);
                 }
                 qjPageReloadView.update();
+                qjPageReloadView.lisViewArriveTop();
             }
 
             @Override
@@ -48,7 +49,6 @@ public class QJPageReloadActivity extends AppCompatActivity {
                     dataList.add("" + i);
                 }
                 qjPageReloadView.update();
-                qjPageReloadView.listViewArriveBottom();
             }
         };
     }
