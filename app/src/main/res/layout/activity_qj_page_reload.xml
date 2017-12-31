@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.qiaojim.qjviews.QJPageReloadView.QJPageReloadView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/header_view"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:gravity="center"
+        android:background="@color/white"/>
+
+    <ListView
+        android:id="@+id/list_view"
+        android:background="@color/white"
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="5dp"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:id="@+id/footer_view"
+        android:background="@color/white"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="45dp" />
+
+</com.qiaojim.qjviews.QJPageReloadView.QJPageReloadView>
