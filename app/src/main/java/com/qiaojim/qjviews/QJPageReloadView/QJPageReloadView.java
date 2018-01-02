@@ -52,6 +52,9 @@ public class QJPageReloadView extends LinearLayout {
     //自动加载标记
     private boolean autoLoadMore = false;
 
+    //一共显示的数量
+    private int totalCount = 0;
+
     public QJPageReloadView(Context context) {
         super(context);
         initFields(context, null);
@@ -204,7 +207,7 @@ public class QJPageReloadView extends LinearLayout {
         footerView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                qjPageReloadViewListener.onLoadMore();
+                qjPageReloadViewListener.onLoadMore(getTotalCount());
 
                 //使加载更多view为gone
                 resetFooterView();
@@ -326,7 +329,7 @@ public class QJPageReloadView extends LinearLayout {
             if (qjPageReloadViewListener != null) {
                 //没有放弃下拉刷新动作。若手动滑上去，则判定为不刷新
                 if (!cancelRefresh) {
-                    qjPageReloadViewListener.onRefresh();
+                    qjPageReloadViewListener.onRefresh(getTotalCount());
                 }
             }
             handled = true;
@@ -334,7 +337,7 @@ public class QJPageReloadView extends LinearLayout {
 
             if (qjPageReloadViewListener != null) {
                 if (autoLoadMore)
-                    qjPageReloadViewListener.onAutoLoadMore();
+                    qjPageReloadViewListener.onAutoLoadMore(getTotalCount());
                 else
                     initLoadMoreView();
             }
@@ -373,8 +376,6 @@ public class QJPageReloadView extends LinearLayout {
                     && lastChildBottom >= listView.getMeasuredHeight();
         }
 
-//        Log.e(TAG, "======== lisViewArriveBottom ==========\n到达底部：" + atBottom + "     " +
-//                "Item数量：" + listView.getAdapter().getCount());
         return atBottom;
     }
 
@@ -391,15 +392,15 @@ public class QJPageReloadView extends LinearLayout {
     public interface QJPageReloadViewListener {
         /*
         * 下拉刷新回调*/
-        void onRefresh();
+        void onRefresh(int totalCount);
 
         /*
         * 加载更多回调*/
-        void onLoadMore();
+        void onLoadMore(int totalCount);
 
         /*
         * 自动加载更多*/
-        void onAutoLoadMore();
+        void onAutoLoadMore(int totalCount);
 
     }
 
@@ -437,4 +438,14 @@ public class QJPageReloadView extends LinearLayout {
     public void setAutoLoadMore(boolean auto) {
         this.autoLoadMore = auto;
     }
+
+    /**
+     * 获取list中所有元素的数量
+     *
+     * @return
+     */
+    public int getTotalCount() {
+        return adapter.getCount();
+    }
+
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 public class QJPageReloadActivity extends AppCompatActivity {
 
-    private final String TAG = "QJPageReloadActivity";
+    private final String TAG = "QJPageReloadView";
 
     private int start = -1;
     private int end = 30;
@@ -34,7 +34,7 @@ public class QJPageReloadActivity extends AppCompatActivity {
     private void initListener() {
         listener = new QJPageReloadView.QJPageReloadViewListener() {
             @Override
-            public void onRefresh() {
+            public void onRefresh(int totalCount) {
                 Log.e(TAG, "======== onRefresh()回调 ==========");
 
                 for (int i = 0; i < 10; i++) {
@@ -44,7 +44,7 @@ public class QJPageReloadActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onLoadMore() {
+            public void onLoadMore(int totalCount) {
                 Log.e(TAG, "======== onLoadMore()回调 ==========");
 
                 for (int i = 0; i < 10; i++) {
@@ -54,7 +54,7 @@ public class QJPageReloadActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onAutoLoadMore() {
+            public void onAutoLoadMore(int totalCount) {
                 Log.e(TAG, "======== onAutoLoadMore()回调 ==========");
 
                 for (int i = 0; i < 10; i++) {
@@ -70,12 +70,10 @@ public class QJPageReloadActivity extends AppCompatActivity {
         for (int i = 0; i < 30; i++) {
             dataList.add("" + i);
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                this,
-                android.R.layout.simple_expandable_list_item_1,
-                dataList);
 
         qjPageReloadView = findViewById(R.id.qj_page_reload_view);
+        QJReloadViewAdapter adapter = new QJReloadViewAdapter(this, qjPageReloadView);
+        adapter.setData(dataList);
         qjPageReloadView.setAutoLoadMore(false);
         qjPageReloadView.setAdapter(adapter);
         qjPageReloadView.setQJPageReloadViewListener(listener);
