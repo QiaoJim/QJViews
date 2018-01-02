@@ -15,6 +15,9 @@ public class QJPageReloadActivity extends AppCompatActivity {
 
     private final String TAG = "QJPageReloadActivity";
 
+    private int start = -1;
+    private int end = 30;
+
     private QJPageReloadView qjPageReloadView;
     private QJPageReloadView.QJPageReloadViewListener listener;
     private LinkedList<String> dataList = new LinkedList<>();
@@ -34,8 +37,8 @@ public class QJPageReloadActivity extends AppCompatActivity {
             public void onRefresh() {
                 Log.e(TAG, "======== onRefresh()回调 ==========");
 
-                for (int i = -1; i > -11; i--) {
-                    dataList.addFirst("" + i);
+                for (int i = 0; i < 10; i++) {
+                    dataList.addFirst("" + start--);
                 }
                 qjPageReloadView.update();
             }
@@ -44,8 +47,18 @@ public class QJPageReloadActivity extends AppCompatActivity {
             public void onLoadMore() {
                 Log.e(TAG, "======== onLoadMore()回调 ==========");
 
-                for (int i = 50; i < 60; i++) {
-                    dataList.add("" + i);
+                for (int i = 0; i < 10; i++) {
+                    dataList.add("" + end++);
+                }
+                qjPageReloadView.update();
+            }
+
+            @Override
+            public void onAutoLoadMore() {
+                Log.e(TAG, "======== onAutoLoadMore()回调 ==========");
+
+                for (int i = 0; i < 10; i++) {
+                    dataList.add("" + end++);
                 }
                 qjPageReloadView.update();
             }
@@ -54,7 +67,7 @@ public class QJPageReloadActivity extends AppCompatActivity {
 
     private void initView() {
 
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 30; i++) {
             dataList.add("" + i);
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
@@ -63,6 +76,7 @@ public class QJPageReloadActivity extends AppCompatActivity {
                 dataList);
 
         qjPageReloadView = findViewById(R.id.qj_page_reload_view);
+        qjPageReloadView.setAutoLoadMore(false);
         qjPageReloadView.setAdapter(adapter);
         qjPageReloadView.setQJPageReloadViewListener(listener);
 
