@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="QJPageReloadView">
+        <attr name="refreshing_text" format="string" />
+        <attr name="loading_more_text" format="string" />
+        <attr name="refresh_min_height" format="dimension"/>
+        <attr name="auto_load" format="boolean"/>
+        <attr name="refresh_enable" format="boolean"/>
+        <attr name="load_more_enable" format="boolean"/>
+        <attr name="header_view_text_color" format="color"/>
+        <attr name="header_view_bgd_color" format="color"/>
+        <attr name="footer_view_text_color" format="color"/>
+        <attr name="footer_view_bgd_color" format="color"/>
+    </declare-styleable>
+
+</resources>
