@@ -56,7 +56,7 @@ public class QJPageReloadView extends LinearLayout {
     private boolean autoLoadMore = false;
 
     //是否正在加载ing，是的话屏蔽后续加载回调
-    private boolean loading=false;
+    private boolean loading = false;
 
 
     public QJPageReloadView(Context context) {
@@ -139,19 +139,17 @@ public class QJPageReloadView extends LinearLayout {
         }
 //        Log.e(TAG, "======== onInterceptTouchEvent ==========\n下滑手势：" + moveDown + "        上滑手势：" + moveUp);
 
-        if (listViewArriveTop() && moveDown) {
+        if (listViewArriveTop() && moveDown && !loading) {
             curAction = QJViewAction.ACTION_REFRESH;
             intercept = true;
-        } else if (listViewArriveBottom() && moveUp) {
+        } else if (listViewArriveBottom() && moveUp && !loading) {
             curAction = QJViewAction.ACTION_LOAD_MORE;
             intercept = true;
         } else {
             curAction = QJViewAction.ACTION_UNDEFINED;
 
-            if (listViewScrolling) {
-                resetHeaderView();
-                resetFooterView();
-            }
+            if (listViewScrolling && !loading)
+                resetFooterView(QJViewState.CLEAR);
         }
 
 //        if (intercept) {
@@ -192,8 +190,13 @@ public class QJPageReloadView extends LinearLayout {
 
                 //处理一次完整的过程结束
                 handled = handleOnceTouch();
+
                 //重置顶部的view
-                resetHeaderView();
+                if (listViewArriveTop() && loading)
+                    resetHeaderView(QJViewState.LOADING);
+                else
+                    resetHeaderView(QJViewState.CLEAR);
+
                 break;
         }
 
@@ -216,10 +219,43 @@ public class QJPageReloadView extends LinearLayout {
                     QJReloadTask.newInstance(QJPageReloadView.this).execute(QJViewAction.ACTION_LOAD_MORE);
                     loading = true;
                     //使加载更多view为gone
-                    resetFooterView();
+                    resetFooterView(QJViewState.LOADING);
                 }
             }
         });
+    }
+
+    /*
+    * 处理拦截下来的一次touch事件*/
+    private boolean handleOnceTouch() {
+
+        boolean handled = false;
+
+        //回调接口不为null，确定回调函数
+        if (curAction == QJViewAction.ACTION_REFRESH) {
+            if (qjPageReloadViewListener != null) {
+                //没有放弃下拉刷新动作。若手动滑上去，则判定为不刷新
+                //若已经正在刷新，则屏蔽此次动作
+                if (!cancelRefresh && !loading) {
+                    QJReloadTask.newInstance(this).execute(QJViewAction.ACTION_REFRESH);
+                    loading = true;
+                    resetHeaderView(QJViewState.LOADING);
+                }
+            }
+            handled = true;
+        } else if (curAction == QJViewAction.ACTION_LOAD_MORE) {
+
+            if (qjPageReloadViewListener != null) {
+                if (autoLoadMore && !loading) {
+                    QJReloadTask.newInstance(this).execute(QJViewAction.ACTION_LOAD_MORE);
+                    loading = true;
+                    resetHeaderView(QJViewState.LOADING);
+                } else if (!loading)
+                    resetFooterView(QJViewState.CREATE);
+            }
+            handled = true;
+        }
+        return handled;
     }
 
     /*
@@ -249,22 +285,61 @@ public class QJPageReloadView extends LinearLayout {
     }
 
     /*
-    * 重置顶部下拉刷新的view：
-    * 1.下拉刷新手指抬起*/
-    private void resetHeaderView() {
-        //设置下拉刷新view的高度=0
-        ViewGroup.LayoutParams params = headerView.getLayoutParams();
-        params.height = 0;
-        headerView.setLayoutParams(params);
+    * 下拉刷新view是否可见*/
+    private boolean headerViewVisible() {
+        boolean visible = false;
+        if (headerView.getHeight() > 0) {
+            visible = true;
+        }
+        return visible;
     }
 
     /*
-    * 重置底部加载更多view
-    * 1.可见时，列表往上翻，即moveDown动作*/
-    private void resetFooterView() {
-        if (footerViewVisible()) {
-            footerView.setVisibility(GONE);
+    * 改变顶部下拉刷新的view*/
+    private void resetHeaderView(QJViewState state) {
+
+        if (state.equals(QJViewState.CLEAR)) {
+            //重置顶部下拉刷新的view
+            //设置下拉刷新view的高度=0
+            //1.下拉刷新手指抬起
+            ViewGroup.LayoutParams params = headerView.getLayoutParams();
+            params.height = 0;
+            headerView.setLayoutParams(params);
+        } else if (state.equals(QJViewState.LOADING)) {
+
+            headerView.setText("请稍候, 刷新中...");
+            ViewGroup.LayoutParams params = headerView.getLayoutParams();
+            params.height = REFRESH_MIN_HEIGHT;
+            headerView.setLayoutParams(params);
+        } else if (state.equals(QJViewState.CREATE)) {
+
         }
+    }
+
+    /*
+    * 改变底部加载更多view*/
+    private void resetFooterView(QJViewState state) {
+        if (state.equals(QJViewState.CLEAR)) {
+            //重置底部加载更多view
+            //1.可见时，列表往上翻，即moveDown动作
+            if (footerViewVisible()) {
+                footerView.setVisibility(GONE);
+            }
+        } else if (state.equals(QJViewState.LOADING)) {
+            footerView.setText("请稍候, 加载中...");
+        } else if (state.equals(QJViewState.CREATE)) {
+
+            if (!footerViewVisible())
+                footerView.setVisibility(VISIBLE);
+            if (loading)
+                footerView.setText("请稍候, 加载中...");
+            else
+                footerView.setText("加载更多");
+
+            //底部显示view后，将列表设置到底部
+            setListToBottom();
+        }
+
     }
 
     /*
@@ -326,54 +401,12 @@ public class QJPageReloadView extends LinearLayout {
     }
 
     /*
-    * 处理拦截下来的一次touch事件*/
-    private boolean handleOnceTouch() {
-
-        boolean handled = false;
-
-        //回调接口不为null，确定回调函数
-        if (curAction == QJViewAction.ACTION_REFRESH) {
-            if (qjPageReloadViewListener != null) {
-                //没有放弃下拉刷新动作。若手动滑上去，则判定为不刷新
-                //若已经正在刷新，则屏蔽此次动作
-                if (!cancelRefresh && !loading) {
-                    QJReloadTask.newInstance(this).execute(QJViewAction.ACTION_REFRESH);
-                    loading = true;
-                }
-            }
-            handled = true;
-        } else if (curAction == QJViewAction.ACTION_LOAD_MORE) {
-
-            if (qjPageReloadViewListener != null) {
-                if (autoLoadMore && !loading){
-                    QJReloadTask.newInstance(this).execute(QJViewAction.ACTION_LOAD_MORE);
-                    loading=true;
-                }
-                else
-                    initLoadMoreView();
-            }
-            handled = true;
-        }
-        return handled;
-    }
-
-    /*
-    * 显示加载更多view*/
-    private void initLoadMoreView() {
-        footerView.setVisibility(VISIBLE);
-        footerView.setText("加载更多");
-
-        //底部显示view后，将列表设置到底部
-        setListToBottom();
-    }
-
-    /*
     * 设置列表到底部*/
-    private void setListToBottom(){
+    private void setListToBottom() {
         listView.post(new Runnable() {
             @Override
             public void run() {
-                listView.setSelection(getTotalCount()-1);
+                listView.setSelection(getTotalCount() - 1);
             }
         });
     }
@@ -413,6 +446,12 @@ public class QJPageReloadView extends LinearLayout {
     }
 
     /*
+    * 底部和顶部view的状态*/
+    private enum QJViewState {
+        LOADING, CLEAR, CREATE
+    }
+
+    /*
     * 回调接口定义*/
     public interface QJPageReloadViewListener {
         /*
@@ -433,9 +472,9 @@ public class QJPageReloadView extends LinearLayout {
     * 异步加载任务*/
     private static class QJReloadTask extends AsyncTask<Integer, Integer, Boolean> {
 
-        private WeakReference<QJPageReloadView> viewWeakReference=null;
+        private WeakReference<QJPageReloadView> viewWeakReference = null;
 
-        public static QJReloadTask newInstance(QJPageReloadView view){
+        public static QJReloadTask newInstance(QJPageReloadView view) {
             return new QJReloadTask(view);
         }
 
@@ -464,9 +503,11 @@ public class QJPageReloadView extends LinearLayout {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
-            if (aBoolean){
+            if (aBoolean) {
                 QJPageReloadView view = viewWeakReference.get();
                 view.setLoading(false);
+                view.resetHeaderView(QJViewState.CLEAR);
+                view.resetFooterView(QJViewState.CLEAR);
 
                 //UI线程回调onFinish()
                 QJPageReloadViewListener qjPageReloadViewListener = view.getQjPageReloadViewListener();
@@ -476,6 +517,8 @@ public class QJPageReloadView extends LinearLayout {
         }
     }
 
+    /*
+    * 设置正在加载的标记*/
     private void setLoading(boolean loading) {
         this.loading = loading;
     }

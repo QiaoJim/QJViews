@@ -40,7 +40,7 @@ public class QJPageReloadActivity extends AppCompatActivity {
         listener = new QJPageReloadView.QJPageReloadViewListener() {
             @Override
             public boolean onRefresh(int totalCount) {
-                Log.e(TAG, "======== onRefresh()回调 ==========" + Thread.currentThread().getName());
+//                Log.e(TAG, "======== onRefresh()回调 ==========" + Thread.currentThread().getName());
 
                 List<String> list = new ArrayList<>();
                 for (int i = 0; i < 10; i++) {
@@ -62,7 +62,7 @@ public class QJPageReloadActivity extends AppCompatActivity {
 
             @Override
             public boolean onLoadMore(int totalCount) {
-                Log.e(TAG, "======== onLoadMore()回调 ==========" + Thread.currentThread().getName());
+//                Log.e(TAG, "======== onLoadMore()回调 ==========" + Thread.currentThread().getName());
 
                 List<String> list = new ArrayList<>();
                 for (int i = 0; i < 10; i++) {
@@ -84,7 +84,7 @@ public class QJPageReloadActivity extends AppCompatActivity {
 
             @Override
             public void onFinished() {
-                Log.e(TAG, "======== onFinished()回调 ==========" + Thread.currentThread().getName());
+//                Log.e(TAG, "======== onFinished()回调 ==========" + Thread.currentThread().getName());
             }
 
         };
