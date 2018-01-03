@@ -2,6 +2,7 @@ package com.qiaojim.qjviews.QJPageReloadView;
 
 import android.content.Context;
 import android.graphics.RectF;
+import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -177,7 +178,7 @@ public class QJPageReloadView extends LinearLayout {
                 break;
 
             case MotionEvent.ACTION_MOVE:
-                Log.e(TAG, "======== onTouchEvent ==========\tmove\t\t当前动作：" + curAction);
+//                Log.e(TAG, "======== onTouchEvent ==========\tmove\t\t当前动作：" + curAction);
 
                 //处理滑动事件
                 handled = handleMoving(event);
@@ -185,7 +186,7 @@ public class QJPageReloadView extends LinearLayout {
 
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
-                Log.e(TAG, "======== onTouchEvent ==========\tup/cancel\t\t当前动作：" + curAction);
+//                Log.e(TAG, "======== onTouchEvent ==========\tup/cancel\t\t当前动作：" + curAction);
 
                 //处理一次完整的过程结束
                 handled = handleOnceTouch();
@@ -207,7 +208,8 @@ public class QJPageReloadView extends LinearLayout {
         footerView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                qjPageReloadViewListener.onLoadMore(getTotalCount());
+
+                new QJReloadTask().execute(QJViewAction.ACTION_LOAD_MORE);
 
                 //使加载更多view为gone
                 resetFooterView();
@@ -329,7 +331,7 @@ public class QJPageReloadView extends LinearLayout {
             if (qjPageReloadViewListener != null) {
                 //没有放弃下拉刷新动作。若手动滑上去，则判定为不刷新
                 if (!cancelRefresh) {
-                    qjPageReloadViewListener.onRefresh(getTotalCount());
+                    new QJReloadTask().execute(QJViewAction.ACTION_REFRESH);
                 }
             }
             handled = true;
@@ -337,7 +339,7 @@ public class QJPageReloadView extends LinearLayout {
 
             if (qjPageReloadViewListener != null) {
                 if (autoLoadMore)
-                    qjPageReloadViewListener.onAutoLoadMore(getTotalCount());
+                    new QJReloadTask().execute(QJViewAction.ACTION_LOAD_MORE);
                 else
                     initLoadMoreView();
             }
@@ -392,16 +394,42 @@ public class QJPageReloadView extends LinearLayout {
     public interface QJPageReloadViewListener {
         /*
         * 下拉刷新回调*/
-        void onRefresh(int totalCount);
+        boolean onRefresh(int totalCount);
 
         /*
         * 加载更多回调*/
-        void onLoadMore(int totalCount);
+        boolean onLoadMore(int totalCount);
 
         /*
-        * 自动加载更多*/
-        void onAutoLoadMore(int totalCount);
+        * 刷新或加载完成*/
+        void onFinished();
 
+    }
+
+    /*
+    * 异步加载任务*/
+    private class QJReloadTask extends AsyncTask<Integer, Integer, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(Integer... integers) {
+            int action = integers[0];
+            boolean ret = false;
+
+            if (action == QJViewAction.ACTION_REFRESH) {
+                ret = qjPageReloadViewListener.onRefresh(getTotalCount());
+            } else if (action == QJViewAction.ACTION_LOAD_MORE) {
+                ret = qjPageReloadViewListener.onLoadMore(getTotalCount());
+            }
+
+            return ret;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+            if (aBoolean)
+                qjPageReloadViewListener.onFinished();
+        }
     }
 
     /**
