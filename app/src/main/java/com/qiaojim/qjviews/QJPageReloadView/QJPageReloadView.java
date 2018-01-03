@@ -53,8 +53,9 @@ public class QJPageReloadView extends LinearLayout {
     //自动加载标记
     private boolean autoLoadMore = false;
 
-    //一共显示的数量
-    private int totalCount = 0;
+    //是否正在加载ing，是的话屏蔽后续加载回调
+    private boolean isLoading=false;
+
 
     public QJPageReloadView(Context context) {
         super(context);
@@ -190,7 +191,7 @@ public class QJPageReloadView extends LinearLayout {
 
                 //处理一次完整的过程结束
                 handled = handleOnceTouch();
-                //重置底部和顶部的view
+                //重置顶部的view
                 resetHeaderView();
                 break;
         }
@@ -209,8 +210,8 @@ public class QJPageReloadView extends LinearLayout {
             @Override
             public void onClick(View v) {
 
+                //异步加载更多
                 new QJReloadTask().execute(QJViewAction.ACTION_LOAD_MORE);
-
                 //使加载更多view为gone
                 resetFooterView();
             }
@@ -353,6 +354,20 @@ public class QJPageReloadView extends LinearLayout {
     private void initLoadMoreView() {
         footerView.setVisibility(VISIBLE);
         footerView.setText("加载更多");
+
+        //底部显示view后，将列表设置到底部
+        setListToBottom();
+    }
+
+    /*
+    * 设置列表到底部*/
+    private void setListToBottom(){
+        listView.post(new Runnable() {
+            @Override
+            public void run() {
+                listView.setSelection(getTotalCount()-1);
+            }
+        });
     }
 
     /*

@@ -136,6 +136,7 @@ public class QJPageReloadActivity extends AppCompatActivity {
             dataList.addFirst(s);
         }
         qjPageReloadView.update();
+
     }
 
     private void loadMoreFinished(List<String> list) {
