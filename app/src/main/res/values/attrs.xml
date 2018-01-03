@@ -8,10 +8,10 @@
         <attr name="auto_load" format="boolean"/>
         <attr name="refresh_enable" format="boolean"/>
         <attr name="load_more_enable" format="boolean"/>
-        <attr name="header_view_text_color" format="color"/>
-        <attr name="header_view_bgd_color" format="color"/>
-        <attr name="footer_view_text_color" format="color"/>
-        <attr name="footer_view_bgd_color" format="color"/>
+        <attr name="header_view_text_color" format="reference|color"/>
+        <attr name="header_view_bgd_color" format="reference|color"/>
+        <attr name="footer_view_text_color" format="reference|color"/>
+        <attr name="footer_view_bgd_color" format="reference|color"/>
     </declare-styleable>
 
 </resources>
