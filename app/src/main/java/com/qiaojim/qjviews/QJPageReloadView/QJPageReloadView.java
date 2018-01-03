@@ -6,13 +6,18 @@ import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.qiaojim.qjviews.R;
 
 import java.lang.ref.WeakReference;
 
@@ -164,7 +169,6 @@ public class QJPageReloadView extends LinearLayout {
         return intercept;
     }
 
-
     /*
     * 1.列表到达顶部，处理下滑
     * 2.列表到达底部，处理上滑*/
@@ -206,9 +210,27 @@ public class QJPageReloadView extends LinearLayout {
     /*
     * 实例子view*/
     private void initChildView() {
-        headerView = (TextView) getChildAt(0);
-        listView = (ListView) getChildAt(1);
-        footerView = (TextView) getChildAt(2);
+
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
+        params.bottomMargin = dp2pix(context,3);
+        headerView = new TextView(context);
+        headerView.setGravity(Gravity.CENTER);
+        headerView.setBackgroundColor(context.getResources().getColor(R.color.white));
+        addView(headerView, params);
+
+        params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f);
+        listView = new ListView(context);
+        listView.setBackgroundColor(context.getResources().getColor(R.color.white));
+        addView(listView, params);
+
+        int footerViewHeight =dp2pix(context, 45);
+        params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, footerViewHeight);
+        params.topMargin = dp2pix(context,3);;
+        footerView = new TextView(context);
+        footerView.setGravity(Gravity.CENTER);
+        footerView.setBackgroundColor(context.getResources().getColor(R.color.white));
+        footerView.setVisibility(GONE);
+        addView(footerView, params);
 
         footerView.setOnClickListener(new OnClickListener() {
             @Override
@@ -435,6 +457,20 @@ public class QJPageReloadView extends LinearLayout {
         }
 
         return atBottom;
+    }
+
+    /*
+    * pix转dp*/
+    private int pix2dp(Context context, float pix){
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int)(pix / scale + 0.5f);
+    }
+
+    /*
+    * dp转pix*/
+    private int dp2pix(Context context, float dp){
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int)(dp * scale + 0.5f);
     }
 
     /*

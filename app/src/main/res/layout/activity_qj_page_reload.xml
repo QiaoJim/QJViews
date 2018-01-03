@@ -1,33 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.qiaojim.qjviews.QJPageReloadView.QJPageReloadView android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
+<com.qiaojim.qjviews.QJPageReloadView.QJPageReloadView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/qj_page_reload_view"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/header_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:gravity="center"
-        android:layout_marginBottom="5dp"
-        android:text="下拉刷新"
-        android:background="@color/white"/>
-
-    <ListView
-        android:id="@+id/list_view"
-        android:background="@color/white"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-
-    <TextView
-        android:id="@+id/footer_view"
-        android:background="@color/white"
-        android:gravity="center"
-        android:layout_marginTop="5dp"
-        android:layout_width="match_parent"
-        android:layout_height="45dp"
-        android:visibility="gone"/>
 
 </com.qiaojim.qjviews.QJPageReloadView.QJPageReloadView>
