@@ -1,20 +1,18 @@
 package com.qiaojim.qjviews.QJPageReloadView;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.qiaojim.qjviews.R;
@@ -30,6 +28,7 @@ import java.lang.ref.WeakReference;
 public class QJPageReloadView extends LinearLayout {
 
     private final String TAG = "QJPageReloadView";
+
     // 竖直方向滑动的最小的y轴分辨率
     private final int MIN_DELTA_Y = 4;
     // 下拉刷新的最小下拉的高度
@@ -57,12 +56,20 @@ public class QJPageReloadView extends LinearLayout {
     //回调接口
     private QJPageReloadViewListener qjPageReloadViewListener;
 
-    //自动加载标记
-    private boolean autoLoadMore = false;
-
     //是否正在加载ing，是的话屏蔽后续加载回调
     private boolean loading = false;
 
+    //自定义属性值
+    private int headerViewBgdColor;
+    private int footerViewBgdColor;
+    private int headerViewTextColor;
+    private int footerViewTextColor;
+    private float headerViewTextSize;
+    private float footerViewTextSize;
+    private float refreshMinHeight = -1;
+    private boolean refreshEnable = false;
+    private boolean loadMoreEnable = false;
+    private boolean autoLoadMore = false;
 
     public QJPageReloadView(Context context) {
         super(context);
@@ -81,6 +88,62 @@ public class QJPageReloadView extends LinearLayout {
 
     private void initFields(Context context, AttributeSet attrs) {
         this.context = context;
+
+        int resId;
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.QJPageReloadView);
+
+        //背景颜色
+        resId = typedArray.getResourceId(R.styleable.QJPageReloadView_header_view_bgd_color, -1);
+        if (resId == -1)
+            headerViewBgdColor = loadColor(R.color.white);
+        else
+            headerViewBgdColor = loadColor(resId);
+        resId = typedArray.getResourceId(R.styleable.QJPageReloadView_footer_view_bgd_color, -1);
+        if (resId == -1)
+            footerViewBgdColor = loadColor(R.color.white);
+        else
+            footerViewBgdColor = loadColor(resId);
+
+        //文字大小
+        resId = typedArray.getResourceId(R.styleable.QJPageReloadView_header_view_text_size, -1);
+        if (resId == -1)
+            headerViewTextSize = sp2pix(context, 18);
+        else
+            headerViewTextSize = loadDimension(resId);
+        resId = typedArray.getResourceId(R.styleable.QJPageReloadView_footer_view_text_size, -1);
+        if (resId == -1)
+            footerViewTextSize = sp2pix(context, 18);
+        else
+            footerViewTextSize = loadDimension(resId);
+
+        //文字颜色
+        resId = typedArray.getResourceId(R.styleable.QJPageReloadView_header_view_text_color, -1);
+        if (resId == -1)
+            headerViewTextSize = loadColor(R.color.black);
+        else
+            headerViewBgdColor = loadColor(resId);
+        resId = typedArray.getResourceId(R.styleable.QJPageReloadView_footer_view_text_color, -1);
+        if (resId == -1)
+            footerViewTextSize = loadColor(R.color.black);
+        else
+            footerViewBgdColor = loadColor(resId);
+
+
+        //下拉刷新的开启与否
+        refreshEnable = typedArray.getBoolean(R.styleable.QJPageReloadView_refresh_enable, true);
+        if (refreshEnable) {
+            //下拉最小的高度
+            resId = typedArray.getResourceId(R.styleable.QJPageReloadView_refresh_min_height, -1);
+            if (resId == -1)
+                refreshMinHeight = REFRESH_MIN_HEIGHT;
+            else
+                refreshMinHeight = loadDimension(resId);
+        }
+
+        //加载更多开启与否
+        refreshEnable = typedArray.getBoolean(R.styleable.QJPageReloadView_refresh_enable, true);
+
+        typedArray.recycle();
     }
 
     @Override
@@ -208,11 +271,18 @@ public class QJPageReloadView extends LinearLayout {
     }
 
     /*
-    * 实例子view*/
+    * 实例子view，依次添加
+    * 1.顶部下拉刷新view
+    * 2.中间的listview
+    * 3.底部加载更多view*/
     private void initChildView() {
 
+        addHeaderView();
+        addListView();
+        addFooterView();
+
         LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
-        params.bottomMargin = dp2pix(context,3);
+        params.bottomMargin = dp2pix(context, 3);
         headerView = new TextView(context);
         headerView.setGravity(Gravity.CENTER);
         headerView.setBackgroundColor(context.getResources().getColor(R.color.white));
@@ -223,9 +293,9 @@ public class QJPageReloadView extends LinearLayout {
         listView.setBackgroundColor(context.getResources().getColor(R.color.white));
         addView(listView, params);
 
-        int footerViewHeight =dp2pix(context, 45);
+        int footerViewHeight = dp2pix(context, 45);
         params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, footerViewHeight);
-        params.topMargin = dp2pix(context,3);;
+        params.topMargin = dp2pix(context, 3);
         footerView = new TextView(context);
         footerView.setGravity(Gravity.CENTER);
         footerView.setBackgroundColor(context.getResources().getColor(R.color.white));
@@ -245,6 +315,18 @@ public class QJPageReloadView extends LinearLayout {
                 }
             }
         });
+    }
+
+    private void addHeaderView() {
+
+    }
+
+    private void addListView() {
+
+    }
+
+    private void addFooterView() {
+
     }
 
     /*
@@ -461,16 +543,44 @@ public class QJPageReloadView extends LinearLayout {
 
     /*
     * pix转dp*/
-    private int pix2dp(Context context, float pix){
+    private int pix2dp(Context context, float pix) {
         final float scale = context.getResources().getDisplayMetrics().density;
-        return (int)(pix / scale + 0.5f);
+        return (int) (pix / scale + 0.5f);
     }
 
     /*
     * dp转pix*/
-    private int dp2pix(Context context, float dp){
+    private int dp2pix(Context context, float dp) {
         final float scale = context.getResources().getDisplayMetrics().density;
-        return (int)(dp * scale + 0.5f);
+        return (int) (dp * scale + 0.5f);
+    }
+
+    public int pix2sp(Context context, float pix) {
+        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+        return (int) (pix / fontScale + 0.5f);
+    }
+
+    public int sp2pix(Context context, float sp) {
+        final float fontScale = context.getResources().getDisplayMetrics().scaledDensity;
+        return (int) (sp * fontScale + 0.5f);
+    }
+
+    /*
+    * 加载颜色资源*/
+    private int loadColor(int resId) {
+        return context.getResources().getColor(resId);
+    }
+
+    /*
+    * 加载字符串资源*/
+    private String loadString(int resId) {
+        return context.getResources().getString(resId);
+    }
+
+    /*
+    * 加载尺寸资源*/
+    private float loadDimension(int resId) {
+        return context.getResources().getDimension(resId);
     }
 
     /*
