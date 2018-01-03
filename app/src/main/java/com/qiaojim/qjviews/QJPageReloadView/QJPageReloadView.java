@@ -211,11 +211,13 @@ public class QJPageReloadView extends LinearLayout {
             @Override
             public void onClick(View v) {
 
-                //异步加载更多
-                QJReloadTask.newInstance(QJPageReloadView.this).execute(QJViewAction.ACTION_LOAD_MORE);
-                loading = true;
-                //使加载更多view为gone
-                resetFooterView();
+                if (!loading) {
+                    //异步加载更多
+                    QJReloadTask.newInstance(QJPageReloadView.this).execute(QJViewAction.ACTION_LOAD_MORE);
+                    loading = true;
+                    //使加载更多view为gone
+                    resetFooterView();
+                }
             }
         });
     }
@@ -333,7 +335,8 @@ public class QJPageReloadView extends LinearLayout {
         if (curAction == QJViewAction.ACTION_REFRESH) {
             if (qjPageReloadViewListener != null) {
                 //没有放弃下拉刷新动作。若手动滑上去，则判定为不刷新
-                if (!cancelRefresh) {
+                //若已经正在刷新，则屏蔽此次动作
+                if (!cancelRefresh && !loading) {
                     QJReloadTask.newInstance(this).execute(QJViewAction.ACTION_REFRESH);
                     loading = true;
                 }
@@ -342,7 +345,7 @@ public class QJPageReloadView extends LinearLayout {
         } else if (curAction == QJViewAction.ACTION_LOAD_MORE) {
 
             if (qjPageReloadViewListener != null) {
-                if (autoLoadMore){
+                if (autoLoadMore && !loading){
                     QJReloadTask.newInstance(this).execute(QJViewAction.ACTION_LOAD_MORE);
                     loading=true;
                 }
@@ -463,10 +466,18 @@ public class QJPageReloadView extends LinearLayout {
             super.onPostExecute(aBoolean);
             if (aBoolean){
                 QJPageReloadView view = viewWeakReference.get();
+                view.setLoading(false);
+
+                //UI线程回调onFinish()
                 QJPageReloadViewListener qjPageReloadViewListener = view.getQjPageReloadViewListener();
                 qjPageReloadViewListener.onFinished();
+
             }
         }
+    }
+
+    private void setLoading(boolean loading) {
+        this.loading = loading;
     }
 
     /**
