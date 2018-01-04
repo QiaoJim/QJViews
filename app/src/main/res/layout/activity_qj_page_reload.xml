@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.qiaojim.qjviews.QJPageReloadView.QJPageReloadView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:qjviews="http://schemas.android.com/apk/res-auto"
     android:id="@+id/qj_page_reload_view"
     android:layout_width="match_parent"
     android:orientation="vertical"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    qjviews:header_view_text_size="16sp"
+    qjviews:header_view_bgd_color="@color/orange"
+    qjviews:header_view_text_color="@color/white"
+    qjviews:footer_view_text_color="@color/orange">
 
 </com.qiaojim.qjviews.QJPageReloadView.QJPageReloadView>

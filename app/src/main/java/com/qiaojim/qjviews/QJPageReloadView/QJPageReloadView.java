@@ -6,6 +6,8 @@ import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -33,6 +35,8 @@ public class QJPageReloadView extends LinearLayout {
     private final int MIN_DELTA_Y = 4;
     // 下拉刷新的最小下拉的高度
     private final int REFRESH_MIN_HEIGHT = 200;
+    // 字体大小
+    private final int DEFAULT_TEXT_SIZE = 40;
 
     private Context context;
 
@@ -64,9 +68,10 @@ public class QJPageReloadView extends LinearLayout {
     private int footerViewBgdColor;
     private int headerViewTextColor;
     private int footerViewTextColor;
-    private float headerViewTextSize;
-    private float footerViewTextSize;
-    private float refreshMinHeight = -1;
+    private int headerViewTextSize;
+    private int footerViewTextSize;
+    private int refreshMinHeight = -1;
+    private int refreshMaxHeight = -1;
     private boolean refreshEnable = false;
     private boolean loadMoreEnable = false;
     private boolean autoLoadMore = false;
@@ -105,28 +110,21 @@ public class QJPageReloadView extends LinearLayout {
             footerViewBgdColor = loadColor(resId);
 
         //文字大小
-        resId = typedArray.getResourceId(R.styleable.QJPageReloadView_header_view_text_size, -1);
-        if (resId == -1)
-            headerViewTextSize = sp2pix(context, 18);
-        else
-            headerViewTextSize = loadDimension(resId);
-        resId = typedArray.getResourceId(R.styleable.QJPageReloadView_footer_view_text_size, -1);
-        if (resId == -1)
-            footerViewTextSize = sp2pix(context, 18);
-        else
-            footerViewTextSize = loadDimension(resId);
+        headerViewTextSize = typedArray.getDimensionPixelSize(R.styleable.QJPageReloadView_header_view_text_size, DEFAULT_TEXT_SIZE);
+        footerViewTextSize = typedArray.getDimensionPixelSize(R.styleable.QJPageReloadView_footer_view_text_size, DEFAULT_TEXT_SIZE);
+        Log.e(TAG, headerViewTextSize + "\t" + footerViewTextSize);
 
         //文字颜色
         resId = typedArray.getResourceId(R.styleable.QJPageReloadView_header_view_text_color, -1);
         if (resId == -1)
-            headerViewTextSize = loadColor(R.color.black);
+            headerViewTextColor = loadColor(R.color.black);
         else
-            headerViewBgdColor = loadColor(resId);
+            headerViewTextColor = loadColor(resId);
         resId = typedArray.getResourceId(R.styleable.QJPageReloadView_footer_view_text_color, -1);
         if (resId == -1)
-            footerViewTextSize = loadColor(R.color.black);
+            footerViewTextColor = loadColor(R.color.black);
         else
-            footerViewBgdColor = loadColor(resId);
+            footerViewTextColor = loadColor(resId);
 
 
         //下拉刷新的开启与否
@@ -137,13 +135,24 @@ public class QJPageReloadView extends LinearLayout {
             if (resId == -1)
                 refreshMinHeight = REFRESH_MIN_HEIGHT;
             else
-                refreshMinHeight = loadDimension(resId);
+                refreshMinHeight = (int) loadDimension(resId);
+
+            //下拉最大的高度
+            resId = typedArray.getResourceId(R.styleable.QJPageReloadView_refresh_max_height, -1);
+            if (resId == -1)
+                refreshMaxHeight = (int) (getScreenHeight() * 0.75);
+            else
+                refreshMaxHeight = (int) loadDimension(resId);
         }
 
         //加载更多开启与否
         refreshEnable = typedArray.getBoolean(R.styleable.QJPageReloadView_refresh_enable, true);
 
         typedArray.recycle();
+    }
+
+    private int getScreenHeight() {
+        return context.getResources().getDisplayMetrics().heightPixels;
     }
 
     @Override
@@ -281,24 +290,35 @@ public class QJPageReloadView extends LinearLayout {
         addListView();
         addFooterView();
 
+    }
+
+    private void addHeaderView() {
         LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
         params.bottomMargin = dp2pix(context, 3);
         headerView = new TextView(context);
         headerView.setGravity(Gravity.CENTER);
-        headerView.setBackgroundColor(context.getResources().getColor(R.color.white));
+        headerView.setTextColor(headerViewTextColor);
+        headerView.setTextSize(TypedValue.COMPLEX_UNIT_PX, headerViewTextSize);
+        headerView.setBackgroundColor(headerViewBgdColor);
         addView(headerView, params);
+    }
 
-        params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f);
+    private void addListView() {
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1.0f);
         listView = new ListView(context);
         listView.setBackgroundColor(context.getResources().getColor(R.color.white));
         addView(listView, params);
+    }
 
+    private void addFooterView() {
         int footerViewHeight = dp2pix(context, 45);
-        params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, footerViewHeight);
+        LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, footerViewHeight);
         params.topMargin = dp2pix(context, 3);
         footerView = new TextView(context);
         footerView.setGravity(Gravity.CENTER);
-        footerView.setBackgroundColor(context.getResources().getColor(R.color.white));
+        footerView.setTextColor(footerViewTextColor);
+        footerView.setTextSize(TypedValue.COMPLEX_UNIT_PX, footerViewTextSize);
+        footerView.setBackgroundColor(footerViewBgdColor);
         footerView.setVisibility(GONE);
         addView(footerView, params);
 
@@ -315,18 +335,6 @@ public class QJPageReloadView extends LinearLayout {
                 }
             }
         });
-    }
-
-    private void addHeaderView() {
-
-    }
-
-    private void addListView() {
-
-    }
-
-    private void addFooterView() {
-
     }
 
     /*
@@ -413,7 +421,7 @@ public class QJPageReloadView extends LinearLayout {
 
             headerView.setText("请稍候, 刷新中...");
             ViewGroup.LayoutParams params = headerView.getLayoutParams();
-            params.height = REFRESH_MIN_HEIGHT;
+            params.height = refreshMinHeight;
             headerView.setLayoutParams(params);
         } else if (state.equals(QJViewState.CREATE)) {
 
@@ -470,7 +478,7 @@ public class QJPageReloadView extends LinearLayout {
             //测量加载更多view的高度
             int headerViewHeight = measureHeaderViewHeight(deltaY);
             //记录是否放弃下拉刷新操作
-            cancelRefresh = headerViewHeight < REFRESH_MIN_HEIGHT;
+            cancelRefresh = headerViewHeight < refreshMinHeight;
         }
 
 //        Log.e(TAG, "y间距：" + deltaY + "        最终测量view的高度：" + headerViewHeight);
@@ -489,10 +497,10 @@ public class QJPageReloadView extends LinearLayout {
         int finalHeight = layoutParams.height;
         if (finalHeight < 0)
             finalHeight = 0;
-        else if (finalHeight > 600)
-            finalHeight = 600;  //最大高度
+        else if (finalHeight > refreshMaxHeight)
+            finalHeight = refreshMaxHeight;  //最大高度
 
-        if (finalHeight >= REFRESH_MIN_HEIGHT)
+        if (finalHeight >= refreshMinHeight)
             headerView.setText("释放立即刷新");
         else
             headerView.setText("下拉刷新");
