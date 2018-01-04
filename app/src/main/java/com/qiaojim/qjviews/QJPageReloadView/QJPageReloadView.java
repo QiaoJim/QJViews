@@ -91,6 +91,8 @@ public class QJPageReloadView extends LinearLayout {
         initFields(context, attrs);
     }
 
+    /*
+    * 初始化成员变量，标记和自定义属性值*/
     private void initFields(Context context, AttributeSet attrs) {
         this.context = context;
 
@@ -112,7 +114,11 @@ public class QJPageReloadView extends LinearLayout {
         //文字大小
         headerViewTextSize = typedArray.getDimensionPixelSize(R.styleable.QJPageReloadView_header_view_text_size, DEFAULT_TEXT_SIZE);
         footerViewTextSize = typedArray.getDimensionPixelSize(R.styleable.QJPageReloadView_footer_view_text_size, DEFAULT_TEXT_SIZE);
-        Log.e(TAG, headerViewTextSize + "\t" + footerViewTextSize);
+        //调整字体大小
+        if (headerViewTextSize < 30 || headerViewTextSize > 90)
+            headerViewTextSize = DEFAULT_TEXT_SIZE;
+        if (footerViewTextSize < 30 || footerViewTextSize > 90)
+            footerViewTextSize = DEFAULT_TEXT_SIZE;
 
         //文字颜色
         resId = typedArray.getResourceId(R.styleable.QJPageReloadView_header_view_text_color, -1);
@@ -130,27 +136,43 @@ public class QJPageReloadView extends LinearLayout {
         //下拉刷新的开启与否
         refreshEnable = typedArray.getBoolean(R.styleable.QJPageReloadView_refresh_enable, true);
         if (refreshEnable) {
-            //下拉最小的高度
-            resId = typedArray.getResourceId(R.styleable.QJPageReloadView_refresh_min_height, -1);
-            if (resId == -1)
-                refreshMinHeight = REFRESH_MIN_HEIGHT;
-            else
-                refreshMinHeight = (int) loadDimension(resId);
+            //下拉最小、最大的高度
+            refreshMinHeight = typedArray.getDimensionPixelSize(R.styleable.QJPageReloadView_refresh_min_height,
+                    REFRESH_MIN_HEIGHT);
+            refreshMaxHeight = typedArray.getDimensionPixelSize(R.styleable.QJPageReloadView_refresh_max_height,
+                    (int) (getScreenHeight() * 0.7));
 
-            //下拉最大的高度
-            resId = typedArray.getResourceId(R.styleable.QJPageReloadView_refresh_max_height, -1);
-            if (resId == -1)
-                refreshMaxHeight = (int) (getScreenHeight() * 0.75);
-            else
-                refreshMaxHeight = (int) loadDimension(resId);
+            //调整高度大小
+            if (refreshMinHeight < 120)
+                refreshMinHeight = REFRESH_MIN_HEIGHT;
+            else if (refreshMinHeight > (int) (getScreenHeight() * 0.35))
+                refreshMinHeight = (int) (getScreenHeight() * 0.35);
+
+            if (refreshMaxHeight > (int) (getScreenHeight() * 0.7))
+                refreshMaxHeight = (int) (getScreenHeight() * 0.7);
+
+            if (refreshMinHeight > refreshMaxHeight)
+                refreshMaxHeight = 2 * refreshMinHeight;
         }
 
         //加载更多开启与否
-        refreshEnable = typedArray.getBoolean(R.styleable.QJPageReloadView_refresh_enable, true);
+        loadMoreEnable = typedArray.getBoolean(R.styleable.QJPageReloadView_load_more_enable, true);
+        if (loadMoreEnable)
+            autoLoadMore = typedArray.getBoolean(R.styleable.QJPageReloadView_load_more_enable, false);
 
         typedArray.recycle();
+
+        Log.e(TAG, "文字大小\t" + headerViewTextSize + "\t" + footerViewTextSize);
+        Log.e(TAG, "文字颜色\t" + headerViewTextColor + "\t" + footerViewTextColor);
+        Log.e(TAG, "背景颜色\t" + headerViewBgdColor + "\t" + footerViewBgdColor);
+        Log.e(TAG, "下拉刷新启用\t" + refreshEnable + "\t");
+        Log.e(TAG, "下拉高度\t" + refreshMinHeight + "\t" + refreshMaxHeight);
+        Log.e(TAG, "加载更多启用\t" + loadMoreEnable + "\t");
+        Log.e(TAG, "自动加载更多启用\t" + autoLoadMore);
     }
 
+    /*
+    * 获取屏幕高度，防止下拉view的高度过大*/
     private int getScreenHeight() {
         return context.getResources().getDisplayMetrics().heightPixels;
     }
@@ -286,6 +308,7 @@ public class QJPageReloadView extends LinearLayout {
     * 3.底部加载更多view*/
     private void initChildView() {
 
+        setOrientation(VERTICAL);
         addHeaderView();
         addListView();
         addFooterView();
