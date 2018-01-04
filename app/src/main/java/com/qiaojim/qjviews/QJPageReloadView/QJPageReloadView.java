@@ -350,6 +350,7 @@ public class QJPageReloadView extends LinearLayout {
             public void onClick(View v) {
 
                 if (!loading) {
+                    qjPageReloadViewListener.onStart();
                     //异步加载更多
                     QJReloadTask.newInstance(QJPageReloadView.this).execute(QJViewAction.ACTION_LOAD_MORE);
                     loading = true;
@@ -372,6 +373,7 @@ public class QJPageReloadView extends LinearLayout {
                 //没有放弃下拉刷新动作。若手动滑上去，则判定为不刷新
                 //若已经正在刷新，则屏蔽此次动作
                 if (!cancelRefresh && !loading) {
+                    qjPageReloadViewListener.onStart();
                     QJReloadTask.newInstance(this).execute(QJViewAction.ACTION_REFRESH);
                     loading = true;
                     resetHeaderView(QJViewState.LOADING);
@@ -382,6 +384,7 @@ public class QJPageReloadView extends LinearLayout {
 
             if (qjPageReloadViewListener != null) {
                 if (autoLoadMore && !loading) {
+                    qjPageReloadViewListener.onStart();
                     QJReloadTask.newInstance(this).execute(QJViewAction.ACTION_LOAD_MORE);
                     loading = true;
                     resetFooterView(QJViewState.LOADING);

@@ -38,6 +38,13 @@ public class QJPageReloadActivity extends AppCompatActivity {
 
     private void initListener() {
         listener = new QJPageReloadView.QJPageReloadViewListener() {
+
+            @Override
+            public void onStart() {
+//                Log.e(TAG, "======== onStart()回调 ==========" + Thread.currentThread().getName());
+
+            }
+
             @Override
             public boolean onRefresh(int totalCount) {
 //                Log.e(TAG, "======== onRefresh()回调 ==========" + Thread.currentThread().getName());
