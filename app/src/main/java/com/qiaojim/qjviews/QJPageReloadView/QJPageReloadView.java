@@ -162,13 +162,13 @@ public class QJPageReloadView extends LinearLayout {
 
         typedArray.recycle();
 
-        Log.e(TAG, "文字大小\t" + headerViewTextSize + "\t" + footerViewTextSize);
-        Log.e(TAG, "文字颜色\t" + headerViewTextColor + "\t" + footerViewTextColor);
-        Log.e(TAG, "背景颜色\t" + headerViewBgdColor + "\t" + footerViewBgdColor);
-        Log.e(TAG, "下拉刷新启用\t" + refreshEnable + "\t");
-        Log.e(TAG, "下拉高度\t" + refreshMinHeight + "\t" + refreshMaxHeight);
-        Log.e(TAG, "加载更多启用\t" + loadMoreEnable + "\t");
-        Log.e(TAG, "自动加载更多启用\t" + autoLoadMore);
+//        Log.e(TAG, "文字大小\t" + headerViewTextSize + "\t" + footerViewTextSize);
+//        Log.e(TAG, "文字颜色\t" + headerViewTextColor + "\t" + footerViewTextColor);
+//        Log.e(TAG, "背景颜色\t" + headerViewBgdColor + "\t" + footerViewBgdColor);
+//        Log.e(TAG, "下拉刷新启用\t" + refreshEnable + "\t");
+//        Log.e(TAG, "下拉高度\t" + refreshMinHeight + "\t" + refreshMaxHeight);
+//        Log.e(TAG, "加载更多启用\t" + loadMoreEnable + "\t");
+//        Log.e(TAG, "自动加载更多启用\t" + autoLoadMore);
     }
 
     /*
@@ -637,16 +637,21 @@ public class QJPageReloadView extends LinearLayout {
     /*
     * 回调接口定义*/
     public interface QJPageReloadViewListener {
+
         /*
-        * 下拉刷新回调*/
+        * 加载任务开始前回调，UI线程，可操作view*/
+        void onStart();
+
+        /*
+        * 下拉刷新回调，非UI线程，可执行耗时操作*/
         boolean onRefresh(int totalCount);
 
         /*
-        * 加载更多回调*/
+        * 加载更多回调，非UI线程，可执行耗时操作*/
         boolean onLoadMore(int totalCount);
 
         /*
-        * 刷新或加载完成*/
+        * 刷新或加载后马上完成，UI线程，可操作view*/
         void onFinished();
 
     }
