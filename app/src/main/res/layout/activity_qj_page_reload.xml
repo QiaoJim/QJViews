@@ -9,8 +9,10 @@
     qjviews:footer_view_text_size="@dimen/header_view_text_size"
     qjviews:refresh_min_height="@dimen/refresh_min_height"
     qjviews:refresh_max_height="@dimen/refresh_max_height"
-    qjviews:header_view_bgd_color="@color/orange"
-    qjviews:header_view_text_color="@color/white"
+    qjviews:refresh_enable="false"
+    qjviews:auto_load="true"
+    qjviews:load_more_enable="true"
+    qjviews:header_view_text_color="@color/orange"
     qjviews:footer_view_text_color="@color/orange">
 
 </com.qiaojim.qjviews.QJPageReloadView.QJPageReloadView>

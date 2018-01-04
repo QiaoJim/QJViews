@@ -238,10 +238,10 @@ public class QJPageReloadView extends LinearLayout {
         }
 //        Log.e(TAG, "======== onInterceptTouchEvent ==========\n下滑手势：" + moveDown + "        上滑手势：" + moveUp);
 
-        if (listViewArriveTop() && moveDown && !loading) {
+        if (listViewArriveTop() && moveDown && !loading && refreshEnable) {
             curAction = QJViewAction.ACTION_REFRESH;
             intercept = true;
-        } else if (listViewArriveBottom() && moveUp && !loading) {
+        } else if (listViewArriveBottom() && moveUp && !loading && loadMoreEnable) {
             curAction = QJViewAction.ACTION_LOAD_MORE;
             intercept = true;
         } else {
@@ -384,7 +384,7 @@ public class QJPageReloadView extends LinearLayout {
                 if (autoLoadMore && !loading) {
                     QJReloadTask.newInstance(this).execute(QJViewAction.ACTION_LOAD_MORE);
                     loading = true;
-                    resetHeaderView(QJViewState.LOADING);
+                    resetFooterView(QJViewState.LOADING);
                 } else if (!loading)
                     resetFooterView(QJViewState.CREATE);
             }
@@ -461,7 +461,13 @@ public class QJPageReloadView extends LinearLayout {
                 footerView.setVisibility(GONE);
             }
         } else if (state.equals(QJViewState.LOADING)) {
+
+            if (!footerViewVisible())
+                footerView.setVisibility(VISIBLE);
             footerView.setText("请稍候, 加载中...");
+            //底部显示view后，将列表设置到底部
+            setListToBottom();
+
         } else if (state.equals(QJViewState.CREATE)) {
 
             if (!footerViewVisible())

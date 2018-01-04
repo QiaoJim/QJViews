@@ -99,7 +99,6 @@ public class QJPageReloadActivity extends AppCompatActivity {
         qjPageReloadView = findViewById(R.id.qj_page_reload_view);
         QJReloadViewAdapter adapter = new QJReloadViewAdapter(this, qjPageReloadView);
         adapter.setData(dataList);
-        qjPageReloadView.setAutoLoadMore(false);
         qjPageReloadView.setAdapter(adapter);
         qjPageReloadView.setQJPageReloadViewListener(listener);
 
