@@ -118,7 +118,7 @@ public class QJPageReloadActivity extends AppCompatActivity {
 
         private WeakReference<QJPageReloadActivity> reference = null;
 
-        public QJReloadHandler(QJPageReloadActivity reference) {
+        private QJReloadHandler(QJPageReloadActivity reference) {
             this.reference = new WeakReference<QJPageReloadActivity>(reference);
         }
 
