@@ -107,6 +107,15 @@ public class QJPageReloadActivity extends AppCompatActivity {
 //                Log.e(TAG, "======== onFinished()回调 ==========" + Thread.currentThread().getName());
             }
 
+            /*
+            * 异步加载任务完成后错误，可控制自定义的提醒UI
+            * 即 onRefresh()、onLoadMore() return false后回调
+            * main线程中，可直接操作更新UI*/
+            @Override
+            public void onError() {
+//                Log.e(TAG, "======== onError()回调 ==========" + Thread.currentThread().getName());
+            }
+
         };
     }
 

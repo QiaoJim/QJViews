@@ -654,8 +654,12 @@ public class QJPageReloadView extends LinearLayout {
         boolean onLoadMore(int totalCount);
 
         /*
-        * 刷新或加载后马上完成，UI线程，可操作view*/
+        * refresh或loadMore中返回true时马上回调，UI线程，可操作view*/
         void onFinished();
+
+        /*
+        * refresh或loadMore中返回false时，在UI线程回调*/
+        void onError();
 
     }
 
@@ -694,16 +698,20 @@ public class QJPageReloadView extends LinearLayout {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
+            QJPageReloadView view = viewWeakReference.get();
+            QJPageReloadViewListener qjPageReloadViewListener = view.getQjPageReloadViewListener();
+
             if (aBoolean) {
-                QJPageReloadView view = viewWeakReference.get();
                 view.setLoading(false);
                 view.resetHeaderView(QJViewState.CLEAR);
                 view.resetFooterView(QJViewState.CLEAR);
 
                 //UI线程回调onFinish()
-                QJPageReloadViewListener qjPageReloadViewListener = view.getQjPageReloadViewListener();
                 qjPageReloadViewListener.onFinished();
 
+            }else{
+                //UI线程回调onError()
+                qjPageReloadViewListener.onError();
             }
         }
     }
