@@ -5,7 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
+import com.qiaojim.qjviews.QJPageReloadView.QJHeaderView;
 import com.qiaojim.qjviews.QJPageReloadView.QJPageReloadActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -21,6 +23,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initView() {
         Button qjPageReloadView = findViewById(R.id.qj_page_reload_view);
         qjPageReloadView.setOnClickListener(this);
+
+
     }
 
     @Override

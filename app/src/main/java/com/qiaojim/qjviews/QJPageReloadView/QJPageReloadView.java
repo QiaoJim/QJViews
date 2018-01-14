@@ -40,7 +40,8 @@ public class QJPageReloadView extends LinearLayout {
 
     private Context context;
 
-    private TextView headerView;
+    //    private TextView headerView;
+    private QJHeaderView headerView;
     private ListView listView;
     private BaseAdapter adapter;
     private TextView footerView;
@@ -318,11 +319,15 @@ public class QJPageReloadView extends LinearLayout {
     private void addHeaderView() {
         LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
         params.bottomMargin = dp2pix(context, 3);
-        headerView = new TextView(context);
-        headerView.setGravity(Gravity.CENTER);
+//        headerView = new TextView(context);
+//        headerView.setGravity(Gravity.CENTER);
+//        headerView.setTextColor(headerViewTextColor);
+//        headerView.setTextSize(TypedValue.COMPLEX_UNIT_PX, headerViewTextSize);
+//        headerView.setBackgroundColor(headerViewBgdColor);
+        headerView = new QJHeaderView(context);
         headerView.setTextColor(headerViewTextColor);
-        headerView.setTextSize(TypedValue.COMPLEX_UNIT_PX, headerViewTextSize);
-        headerView.setBackgroundColor(headerViewBgdColor);
+        headerView.setTextSize(headerViewTextSize);
+        headerView.setHeaderBackgroundColor(headerViewBgdColor);
         addView(headerView, params);
     }
 
@@ -440,12 +445,11 @@ public class QJPageReloadView extends LinearLayout {
             //重置顶部下拉刷新的view
             //设置下拉刷新view的高度=0
             //1.下拉刷新手指抬起
-            ViewGroup.LayoutParams params = headerView.getLayoutParams();
-            params.height = 0;
-            headerView.setLayoutParams(params);
+            headerView.clear();
         } else if (state.equals(QJViewState.LOADING)) {
 
             headerView.setText("请稍候, 刷新中...");
+            headerView.startAnimation();
             ViewGroup.LayoutParams params = headerView.getLayoutParams();
             params.height = refreshMinHeight;
             headerView.setLayoutParams(params);
@@ -709,7 +713,7 @@ public class QJPageReloadView extends LinearLayout {
                 //UI线程回调onFinish()
                 qjPageReloadViewListener.onFinished();
 
-            }else{
+            } else {
                 //UI线程回调onError()
                 qjPageReloadViewListener.onError();
             }
