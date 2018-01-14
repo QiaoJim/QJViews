@@ -34,7 +34,7 @@ public class QJPageReloadView extends LinearLayout {
     // 竖直方向滑动的最小的y轴分辨率
     private final int MIN_DELTA_Y = 4;
     // 下拉刷新的最小下拉的高度
-    private final int REFRESH_MIN_HEIGHT = 200;
+    private final int REFRESH_MIN_HEIGHT = 300;
     // 字体大小
     private final int DEFAULT_TEXT_SIZE = 40;
 
@@ -144,7 +144,7 @@ public class QJPageReloadView extends LinearLayout {
                     (int) (getScreenHeight() * 0.7));
 
             //调整高度大小
-            if (refreshMinHeight < 120)
+            if (refreshMinHeight < 150)
                 refreshMinHeight = REFRESH_MIN_HEIGHT;
             else if (refreshMinHeight > (int) (getScreenHeight() * 0.35))
                 refreshMinHeight = (int) (getScreenHeight() * 0.35);
@@ -319,11 +319,6 @@ public class QJPageReloadView extends LinearLayout {
     private void addHeaderView() {
         LayoutParams params = new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0);
         params.bottomMargin = dp2pix(context, 3);
-//        headerView = new TextView(context);
-//        headerView.setGravity(Gravity.CENTER);
-//        headerView.setTextColor(headerViewTextColor);
-//        headerView.setTextSize(TypedValue.COMPLEX_UNIT_PX, headerViewTextSize);
-//        headerView.setBackgroundColor(headerViewBgdColor);
         headerView = new QJHeaderView(context);
         headerView.setTextColor(headerViewTextColor);
         headerView.setTextSize(headerViewTextSize);
@@ -451,7 +446,7 @@ public class QJPageReloadView extends LinearLayout {
             headerView.setText("请稍候, 刷新中...");
             headerView.startAnimation();
             ViewGroup.LayoutParams params = headerView.getLayoutParams();
-            params.height = refreshMinHeight;
+            params.height = dp2pix(context, 48);
             headerView.setLayoutParams(params);
         } else if (state.equals(QJViewState.CREATE)) {
 
