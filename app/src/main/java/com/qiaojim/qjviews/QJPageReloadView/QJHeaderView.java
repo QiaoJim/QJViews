@@ -61,7 +61,7 @@ public class QJHeaderView extends LinearLayout {
 
     private void addProgressBar() {
         progressBar = new ProgressBar(context);
-        LayoutParams params = new LayoutParams(60, 60);
+        LayoutParams params = new LayoutParams(50, 50);
         params.rightMargin = dp2pix(context, 8);
         progressBar.setLayoutParams(params);
         stopAnimation();
@@ -110,5 +110,11 @@ public class QJHeaderView extends LinearLayout {
     private int dp2pix(Context context, float dp) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dp * scale + 0.5f);
+    }
+
+    public void setBarSize(int refreshBarSize) {
+        LayoutParams params = new LayoutParams(refreshBarSize, refreshBarSize);
+        params.rightMargin = dp2pix(context, 8);
+        progressBar.setLayoutParams(params);
     }
 }

@@ -37,6 +37,9 @@ public class QJPageReloadView extends LinearLayout {
     private final int REFRESH_MIN_HEIGHT = 300;
     // 字体大小
     private final int DEFAULT_TEXT_SIZE = 40;
+    // 默认圆形进度条的大小
+    private final int DEFAULT_REFRESH_BAR_SIZE = 50;
+
 
     private Context context;
 
@@ -73,6 +76,7 @@ public class QJPageReloadView extends LinearLayout {
     private int footerViewTextSize;
     private int refreshMinHeight = -1;
     private int refreshMaxHeight = -1;
+    private int refreshBarSize = DEFAULT_REFRESH_BAR_SIZE;
     private boolean refreshEnable = false;
     private boolean loadMoreEnable = false;
     private boolean autoLoadMore = false;
@@ -142,6 +146,8 @@ public class QJPageReloadView extends LinearLayout {
                     REFRESH_MIN_HEIGHT);
             refreshMaxHeight = typedArray.getDimensionPixelSize(R.styleable.QJPageReloadView_refresh_max_height,
                     (int) (getScreenHeight() * 0.7));
+            refreshBarSize = typedArray.getDimensionPixelSize(R.styleable.QJPageReloadView_refresh_progressbar_size,
+                    DEFAULT_REFRESH_BAR_SIZE);
 
             //调整高度大小
             if (refreshMinHeight < 150)
@@ -154,6 +160,11 @@ public class QJPageReloadView extends LinearLayout {
 
             if (refreshMinHeight > refreshMaxHeight)
                 refreshMaxHeight = 2 * refreshMinHeight;
+
+            if (refreshBarSize < 30 || refreshBarSize > 100) {
+                refreshBarSize = DEFAULT_REFRESH_BAR_SIZE;
+            }
+
         }
 
         //加载更多开启与否
@@ -167,7 +178,7 @@ public class QJPageReloadView extends LinearLayout {
 //        Log.e(TAG, "文字颜色\t" + headerViewTextColor + "\t" + footerViewTextColor);
 //        Log.e(TAG, "背景颜色\t" + headerViewBgdColor + "\t" + footerViewBgdColor);
 //        Log.e(TAG, "下拉刷新启用\t" + refreshEnable + "\t");
-//        Log.e(TAG, "下拉高度\t" + refreshMinHeight + "\t" + refreshMaxHeight);
+        Log.e(TAG, "下拉高度\t" + refreshMinHeight + "\t" + refreshMaxHeight + "\t进度条大小\t" + refreshBarSize);
 //        Log.e(TAG, "加载更多启用\t" + loadMoreEnable + "\t");
 //        Log.e(TAG, "自动加载更多启用\t" + autoLoadMore);
     }
@@ -323,6 +334,7 @@ public class QJPageReloadView extends LinearLayout {
         headerView.setTextColor(headerViewTextColor);
         headerView.setTextSize(headerViewTextSize);
         headerView.setHeaderBackgroundColor(headerViewBgdColor);
+        headerView.setBarSize(refreshBarSize);
         addView(headerView, params);
     }
 
