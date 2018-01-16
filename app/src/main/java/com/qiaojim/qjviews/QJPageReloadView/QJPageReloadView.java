@@ -170,7 +170,7 @@ public class QJPageReloadView extends LinearLayout {
         //加载更多开启与否
         loadMoreEnable = typedArray.getBoolean(R.styleable.QJPageReloadView_load_more_enable, true);
         if (loadMoreEnable)
-            autoLoadMore = typedArray.getBoolean(R.styleable.QJPageReloadView_load_more_enable, false);
+            autoLoadMore = typedArray.getBoolean(R.styleable.QJPageReloadView_auto_load, false);
 
         typedArray.recycle();
 
