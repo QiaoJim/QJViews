@@ -1,4 +1,4 @@
-package com.qiaojim.qjviews.QJPageReloadView;
+package com.qiaojim.qjviews.QJExpandedListView;
 
 import android.content.Context;
 import android.view.LayoutInflater;

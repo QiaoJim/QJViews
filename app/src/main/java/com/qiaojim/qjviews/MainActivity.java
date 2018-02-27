@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.qiaojim.qjviews.QJPageReloadView.QJExpandedListViewActivity;
+import com.qiaojim.qjviews.QJExpandedListView.QJExpandedListViewActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 

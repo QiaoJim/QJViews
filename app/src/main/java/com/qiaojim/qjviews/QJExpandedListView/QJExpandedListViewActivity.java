@@ -1,4 +1,4 @@
-package com.qiaojim.qjviews.QJPageReloadView;
+package com.qiaojim.qjviews.QJExpandedListView;
 
 import android.os.Handler;
 import android.os.Message;
