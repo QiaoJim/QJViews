@@ -131,7 +131,7 @@ public class QJPageReloadActivity extends AppCompatActivity {
         qjPageReloadView.setAdapter(adapter);
 
         // 下一行demo会屏蔽xml中设置的自定义属性
-         qjPageReloadView.setAutoLoadMore(false);
+        qjPageReloadView.setAutoLoadMore(false);
 
         qjPageReloadView.setQJPageReloadViewListener(listener);
 

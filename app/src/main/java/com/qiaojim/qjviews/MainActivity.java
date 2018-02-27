@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button qjPageReloadView = findViewById(R.id.qj_page_reload_view);
         qjPageReloadView.setOnClickListener(this);
 
-
     }
 
     @Override

@@ -583,10 +583,24 @@ public class QJPageReloadView extends LinearLayout {
     private boolean listViewArriveBottom() {
         boolean atBottom = false;
         if (listView != null) {
-            int lastChildBottom = listView.getChildAt(listView.getChildCount() - 1).getBottom();
-            atBottom = listView.getChildCount() > 0
-                    && listView.getLastVisiblePosition() == listView.getAdapter().getCount() - 1
-                    && lastChildBottom >= listView.getMeasuredHeight();
+
+            if (null == adapter || adapter.isEmpty()) {
+                return true;
+            }
+
+            final int lastItemPosition = adapter.getCount() - 1;
+            final int lastVisiblePosition = listView.getLastVisiblePosition();
+
+
+            if (lastVisiblePosition >= lastItemPosition - 1) {
+                final int childIndex = lastVisiblePosition - listView.getFirstVisiblePosition();
+                final int childCount = listView.getChildCount();
+                final int index = Math.min(childIndex, childCount - 1);
+                final View lastVisibleChild = listView.getChildAt(index);
+                if (lastVisibleChild != null) {
+                    atBottom = lastVisibleChild.getBottom() <= listView.getBottom();
+                }
+            }
         }
 
         return atBottom;
