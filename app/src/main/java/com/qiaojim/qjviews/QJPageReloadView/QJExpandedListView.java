@@ -27,7 +27,7 @@ import java.lang.ref.WeakReference;
  * Email: qiaojim@qq.com
  * Desc:
  */
-public class QJPageReloadView extends LinearLayout {
+public class QJExpandedListView extends LinearLayout {
 
     private final String TAG = "QJPageReloadView";
 
@@ -62,7 +62,7 @@ public class QJPageReloadView extends LinearLayout {
     private int curAction = QJViewAction.ACTION_UNDEFINED;
 
     //回调接口
-    private QJPageReloadViewListener qjPageReloadViewListener;
+    private QJExpandedListViewListener qjExpandedListViewListener;
 
     //是否正在加载ing，是的话屏蔽后续加载回调
     private boolean loading = false;
@@ -81,17 +81,17 @@ public class QJPageReloadView extends LinearLayout {
     private boolean loadMoreEnable = false;
     private boolean autoLoadMore = false;
 
-    public QJPageReloadView(Context context) {
+    public QJExpandedListView(Context context) {
         super(context);
         initFields(context, null);
     }
 
-    public QJPageReloadView(Context context, @Nullable AttributeSet attrs) {
+    public QJExpandedListView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         initFields(context, attrs);
     }
 
-    public QJPageReloadView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public QJExpandedListView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         initFields(context, attrs);
     }
@@ -102,23 +102,23 @@ public class QJPageReloadView extends LinearLayout {
         this.context = context;
 
         int resId;
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.QJPageReloadView);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.QJExpandedListView);
 
         //背景颜色
-        resId = typedArray.getResourceId(R.styleable.QJPageReloadView_header_view_bgd_color, -1);
+        resId = typedArray.getResourceId(R.styleable.QJExpandedListView_header_view_bgd_color, -1);
         if (resId == -1)
             headerViewBgdColor = loadColor(R.color.white);
         else
             headerViewBgdColor = loadColor(resId);
-        resId = typedArray.getResourceId(R.styleable.QJPageReloadView_footer_view_bgd_color, -1);
+        resId = typedArray.getResourceId(R.styleable.QJExpandedListView_footer_view_bgd_color, -1);
         if (resId == -1)
             footerViewBgdColor = loadColor(R.color.white);
         else
             footerViewBgdColor = loadColor(resId);
 
         //文字大小
-        headerViewTextSize = typedArray.getDimensionPixelSize(R.styleable.QJPageReloadView_header_view_text_size, DEFAULT_TEXT_SIZE);
-        footerViewTextSize = typedArray.getDimensionPixelSize(R.styleable.QJPageReloadView_footer_view_text_size, DEFAULT_TEXT_SIZE);
+        headerViewTextSize = typedArray.getDimensionPixelSize(R.styleable.QJExpandedListView_header_view_text_size, DEFAULT_TEXT_SIZE);
+        footerViewTextSize = typedArray.getDimensionPixelSize(R.styleable.QJExpandedListView_footer_view_text_size, DEFAULT_TEXT_SIZE);
         //调整字体大小
         if (headerViewTextSize < 30 || headerViewTextSize > 90)
             headerViewTextSize = DEFAULT_TEXT_SIZE;
@@ -126,12 +126,12 @@ public class QJPageReloadView extends LinearLayout {
             footerViewTextSize = DEFAULT_TEXT_SIZE;
 
         //文字颜色
-        resId = typedArray.getResourceId(R.styleable.QJPageReloadView_header_view_text_color, -1);
+        resId = typedArray.getResourceId(R.styleable.QJExpandedListView_header_view_text_color, -1);
         if (resId == -1)
             headerViewTextColor = loadColor(R.color.black);
         else
             headerViewTextColor = loadColor(resId);
-        resId = typedArray.getResourceId(R.styleable.QJPageReloadView_footer_view_text_color, -1);
+        resId = typedArray.getResourceId(R.styleable.QJExpandedListView_footer_view_text_color, -1);
         if (resId == -1)
             footerViewTextColor = loadColor(R.color.black);
         else
@@ -139,14 +139,14 @@ public class QJPageReloadView extends LinearLayout {
 
 
         //下拉刷新的开启与否
-        refreshEnable = typedArray.getBoolean(R.styleable.QJPageReloadView_refresh_enable, true);
+        refreshEnable = typedArray.getBoolean(R.styleable.QJExpandedListView_refresh_enable, true);
         if (refreshEnable) {
             //下拉最小、最大的高度
-            refreshMinHeight = typedArray.getDimensionPixelSize(R.styleable.QJPageReloadView_refresh_min_height,
+            refreshMinHeight = typedArray.getDimensionPixelSize(R.styleable.QJExpandedListView_refresh_min_height,
                     REFRESH_MIN_HEIGHT);
-            refreshMaxHeight = typedArray.getDimensionPixelSize(R.styleable.QJPageReloadView_refresh_max_height,
+            refreshMaxHeight = typedArray.getDimensionPixelSize(R.styleable.QJExpandedListView_refresh_max_height,
                     (int) (getScreenHeight() * 0.7));
-            refreshBarSize = typedArray.getDimensionPixelSize(R.styleable.QJPageReloadView_refresh_progressbar_size,
+            refreshBarSize = typedArray.getDimensionPixelSize(R.styleable.QJExpandedListView_refresh_progressbar_size,
                     DEFAULT_REFRESH_BAR_SIZE);
 
             //调整高度大小
@@ -168,9 +168,9 @@ public class QJPageReloadView extends LinearLayout {
         }
 
         //加载更多开启与否
-        loadMoreEnable = typedArray.getBoolean(R.styleable.QJPageReloadView_load_more_enable, true);
+        loadMoreEnable = typedArray.getBoolean(R.styleable.QJExpandedListView_load_more_enable, true);
         if (loadMoreEnable)
-            autoLoadMore = typedArray.getBoolean(R.styleable.QJPageReloadView_auto_load, false);
+            autoLoadMore = typedArray.getBoolean(R.styleable.QJExpandedListView_auto_load, false);
 
         typedArray.recycle();
 
@@ -362,9 +362,9 @@ public class QJPageReloadView extends LinearLayout {
             public void onClick(View v) {
 
                 if (!loading) {
-                    qjPageReloadViewListener.onStart();
+                    qjExpandedListViewListener.onStart();
                     //异步加载更多
-                    QJReloadTask.newInstance(QJPageReloadView.this).execute(QJViewAction.ACTION_LOAD_MORE);
+                    QJReloadTask.newInstance(QJExpandedListView.this).execute(QJViewAction.ACTION_LOAD_MORE);
                     loading = true;
                     //使加载更多view为gone
                     resetFooterView(QJViewState.LOADING);
@@ -381,11 +381,11 @@ public class QJPageReloadView extends LinearLayout {
 
         //回调接口不为null，确定回调函数
         if (curAction == QJViewAction.ACTION_REFRESH) {
-            if (qjPageReloadViewListener != null) {
+            if (qjExpandedListViewListener != null) {
                 //没有放弃下拉刷新动作。若手动滑上去，则判定为不刷新
                 //若已经正在刷新，则屏蔽此次动作
                 if (!cancelRefresh && !loading) {
-                    qjPageReloadViewListener.onStart();
+                    qjExpandedListViewListener.onStart();
                     QJReloadTask.newInstance(this).execute(QJViewAction.ACTION_REFRESH);
                     loading = true;
                     resetHeaderView(QJViewState.LOADING);
@@ -394,9 +394,9 @@ public class QJPageReloadView extends LinearLayout {
             handled = true;
         } else if (curAction == QJViewAction.ACTION_LOAD_MORE) {
 
-            if (qjPageReloadViewListener != null) {
+            if (qjExpandedListViewListener != null) {
                 if (autoLoadMore && !loading) {
-                    qjPageReloadViewListener.onStart();
+                    qjExpandedListViewListener.onStart();
                     QJReloadTask.newInstance(this).execute(QJViewAction.ACTION_LOAD_MORE);
                     loading = true;
                     resetFooterView(QJViewState.LOADING);
@@ -664,7 +664,7 @@ public class QJPageReloadView extends LinearLayout {
 
     /*
     * 回调接口定义*/
-    public interface QJPageReloadViewListener {
+    public interface QJExpandedListViewListener {
 
         /*
         * 加载任务开始前回调，UI线程，可操作view*/
@@ -692,14 +692,14 @@ public class QJPageReloadView extends LinearLayout {
     * 异步加载任务*/
     private static class QJReloadTask extends AsyncTask<Integer, Integer, Boolean> {
 
-        private WeakReference<QJPageReloadView> viewWeakReference = null;
+        private WeakReference<QJExpandedListView> viewWeakReference = null;
 
-        public static QJReloadTask newInstance(QJPageReloadView view) {
+        public static QJReloadTask newInstance(QJExpandedListView view) {
             return new QJReloadTask(view);
         }
 
-        private QJReloadTask(QJPageReloadView view) {
-            this.viewWeakReference = new WeakReference<QJPageReloadView>(view);
+        private QJReloadTask(QJExpandedListView view) {
+            this.viewWeakReference = new WeakReference<QJExpandedListView>(view);
         }
 
         @Override
@@ -707,14 +707,14 @@ public class QJPageReloadView extends LinearLayout {
             int action = integers[0];
             boolean ret = false;
 
-            QJPageReloadView view = viewWeakReference.get();
-            QJPageReloadViewListener qjPageReloadViewListener = view.getQjPageReloadViewListener();
+            QJExpandedListView view = viewWeakReference.get();
+            QJExpandedListViewListener qjExpandedListViewListener = view.getQjExpandedListViewListener();
             int count = view.getTotalCount();
 
             if (action == QJViewAction.ACTION_REFRESH) {
-                ret = qjPageReloadViewListener.onRefresh(count);
+                ret = qjExpandedListViewListener.onRefresh(count);
             } else if (action == QJViewAction.ACTION_LOAD_MORE) {
-                ret = qjPageReloadViewListener.onLoadMore(count);
+                ret = qjExpandedListViewListener.onLoadMore(count);
             }
 
             return ret;
@@ -723,8 +723,8 @@ public class QJPageReloadView extends LinearLayout {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             super.onPostExecute(aBoolean);
-            QJPageReloadView view = viewWeakReference.get();
-            QJPageReloadViewListener qjPageReloadViewListener = view.getQjPageReloadViewListener();
+            QJExpandedListView view = viewWeakReference.get();
+            QJExpandedListViewListener qjExpandedListViewListener = view.getQjExpandedListViewListener();
 
             if (aBoolean) {
                 view.setLoading(false);
@@ -732,11 +732,11 @@ public class QJPageReloadView extends LinearLayout {
                 view.resetFooterView(QJViewState.CLEAR);
 
                 //UI线程回调onFinish()
-                qjPageReloadViewListener.onFinished();
+                qjExpandedListViewListener.onFinished();
 
             } else {
                 //UI线程回调onError()
-                qjPageReloadViewListener.onError();
+                qjExpandedListViewListener.onError();
             }
         }
     }
@@ -752,12 +752,12 @@ public class QJPageReloadView extends LinearLayout {
      *
      * @param listener
      */
-    public void setQJPageReloadViewListener(QJPageReloadViewListener listener) {
-        this.qjPageReloadViewListener = listener;
+    public void setQJPageReloadViewListener(QJExpandedListViewListener listener) {
+        this.qjExpandedListViewListener = listener;
     }
 
-    public QJPageReloadViewListener getQjPageReloadViewListener() {
-        return qjPageReloadViewListener;
+    public QJExpandedListViewListener getQjExpandedListViewListener() {
+        return qjExpandedListViewListener;
     }
 
     /**

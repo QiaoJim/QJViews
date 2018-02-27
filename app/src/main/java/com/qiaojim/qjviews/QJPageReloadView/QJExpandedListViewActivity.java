@@ -4,8 +4,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.qiaojim.qjviews.R;
 
@@ -14,30 +12,30 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class QJPageReloadActivity extends AppCompatActivity {
+public class QJExpandedListViewActivity extends AppCompatActivity {
 
     private final String TAG = "QJPageReloadView";
 
     private int start = -1;
     private int end = 30;
 
-    private QJPageReloadView qjPageReloadView;
-    private QJPageReloadView.QJPageReloadViewListener listener;
+    private QJExpandedListView qjExpandedListView;
+    private QJExpandedListView.QJExpandedListViewListener listener;
     private LinkedList<String> dataList = new LinkedList<>();
 
-    private QJReloadHandler handler = new QJReloadHandler(QJPageReloadActivity.this);
+    private QJReloadHandler handler = new QJReloadHandler(QJExpandedListViewActivity.this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_qj_page_reload);
+        setContentView(R.layout.activity_qj_expanded_listview);
 
         initListener();
         initView();
     }
 
     private void initListener() {
-        listener = new QJPageReloadView.QJPageReloadViewListener() {
+        listener = new QJExpandedListView.QJExpandedListViewListener() {
 
             /*
             * 异步加载任务开始前回调，可准备自定义的提示UI
@@ -125,15 +123,15 @@ public class QJPageReloadActivity extends AppCompatActivity {
             dataList.add("" + i);
         }
 
-        qjPageReloadView = findViewById(R.id.qj_page_reload_view);
-        QJReloadViewAdapter adapter = new QJReloadViewAdapter(this, qjPageReloadView);
+        qjExpandedListView = findViewById(R.id.qj_page_reload_view);
+        QJExpandedListViewAdapter adapter = new QJExpandedListViewAdapter(this, qjExpandedListView);
         adapter.setData(dataList);
-        qjPageReloadView.setAdapter(adapter);
+        qjExpandedListView.setAdapter(adapter);
 
         // 下一行demo会屏蔽xml中设置的自定义属性
-        qjPageReloadView.setAutoLoadMore(false);
+        qjExpandedListView.setAutoLoadMore(false);
 
-        qjPageReloadView.setQJPageReloadViewListener(listener);
+        qjExpandedListView.setQJPageReloadViewListener(listener);
 
     }
 
@@ -142,16 +140,16 @@ public class QJPageReloadActivity extends AppCompatActivity {
         private static final int REFRESH_OK = 512;
         private static final int LOAD_MORE_OK = 513;
 
-        private WeakReference<QJPageReloadActivity> reference = null;
+        private WeakReference<QJExpandedListViewActivity> reference = null;
 
-        private QJReloadHandler(QJPageReloadActivity reference) {
-            this.reference = new WeakReference<QJPageReloadActivity>(reference);
+        private QJReloadHandler(QJExpandedListViewActivity reference) {
+            this.reference = new WeakReference<QJExpandedListViewActivity>(reference);
         }
 
         @Override
         public void handleMessage(Message msg) {
 
-            QJPageReloadActivity activity = reference.get();
+            QJExpandedListViewActivity activity = reference.get();
             switch (msg.what) {
                 case REFRESH_OK:
                     activity.refreshFinished((List<String>) msg.obj);
@@ -167,12 +165,12 @@ public class QJPageReloadActivity extends AppCompatActivity {
         for (String s : list) {
             dataList.addFirst(s);
         }
-        qjPageReloadView.update();
+        qjExpandedListView.update();
 
     }
 
     private void loadMoreFinished(List<String> list) {
         dataList.addAll(list);
-        qjPageReloadView.update();
+        qjExpandedListView.update();
     }
 }

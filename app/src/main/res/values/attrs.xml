@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <declare-styleable name="QJPageReloadView">
+    <declare-styleable name="QJExpandedListView">
         <attr name="header_view_text_color" format="reference|color"/>
         <attr name="footer_view_text_color" format="reference|color"/>
         <attr name="header_view_text_size" format="dimension"/>

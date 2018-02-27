@@ -1,7 +1,6 @@
 package com.qiaojim.qjviews.QJPageReloadView;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,15 +17,15 @@ import java.util.List;
  * Email: qiaojim@qq.com
  * Desc:
  */
-public class QJReloadViewAdapter extends BaseAdapter {
+public class QJExpandedListViewAdapter extends BaseAdapter {
 
     private final String TAG = "QJPageReloadView";
 
-    private QJPageReloadView view;
+    private QJExpandedListView view;
     private Context context;
     private List<String> data;
 
-    public QJReloadViewAdapter(Context context, QJPageReloadView view) {
+    public QJExpandedListViewAdapter(Context context, QJExpandedListView view) {
         this.context = context;
         this.view = view;
     }
@@ -52,7 +51,7 @@ public class QJReloadViewAdapter extends BaseAdapter {
         if (convertView == null) {
             viewHolder = new ViewHolder();
 
-            convertView = LayoutInflater.from(context).inflate(R.layout.layout_qj_reload_item, null);
+            convertView = LayoutInflater.from(context).inflate(R.layout.layout_qj_listview_item, null);
             viewHolder.tv = convertView.findViewById(R.id.text);
             convertView.setTag(viewHolder);
         } else {

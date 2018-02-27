@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.qiaojim.qjviews.QJPageReloadView.QJPageReloadView
+<com.qiaojim.qjviews.QJPageReloadView.QJExpandedListView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:qjviews="http://schemas.android.com/apk/res-auto"
     android:id="@+id/qj_page_reload_view"
@@ -16,4 +16,4 @@
     qjviews:footer_view_text_color="@color/orange"
     qjviews:refresh_progressbar_size="50px">
 
-</com.qiaojim.qjviews.QJPageReloadView.QJPageReloadView>
+</com.qiaojim.qjviews.QJPageReloadView.QJExpandedListView>
